@@ -1,8 +1,8 @@
 import React from 'react';
 import {
     Wrapper,
-    Container
-} from '../style/headerStyle';
+    Container,
+} from '../style/common';
 
 function CreateInvoice() {
     return (

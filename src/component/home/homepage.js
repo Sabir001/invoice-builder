@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+    Container,
     Wrapper,
-    Container
-} from '../style/headerStyle';
+} from '../style/common';
 
 function HomePage() {
     return (

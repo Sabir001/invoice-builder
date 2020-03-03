@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import {
-    HeaderMain,
     Container,
+} from '../style/common';
+import {
+    HeaderMain,
     HeaderWrapper,
     HeaderBrand,
     HeaderLogo,
