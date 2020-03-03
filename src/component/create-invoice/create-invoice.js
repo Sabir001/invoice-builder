@@ -1,17 +1,8 @@
-import React from 'react';
-import {
-    Wrapper,
-    Container,
-} from '../style/common';
+import React from "react";
+import { Wrapper } from "../../style/common";
 
 function CreateInvoice() {
-    return (
-        <Wrapper>
-            <Container>
-                Create Invoice Page
-            </Container>
-        </Wrapper>
-    );
-  }
-  
-  export default CreateInvoice;
+  return <Wrapper>Create Invoice Page</Wrapper>;
+}
+
+export default CreateInvoice;

@@ -1,17 +1,8 @@
-import React from 'react';
-import {
-    Container,
-    Wrapper,
-} from '../style/common';
+import React from "react";
+import { Wrapper } from "../../style/common";
 
 function HomePage() {
-    return (
-        <Wrapper>
-            <Container>
-                Homepage
-            </Container>
-        </Wrapper>
-    );
+  return <Wrapper>Homepage</Wrapper>;
 }
-  
-  export default HomePage;
+
+export default HomePage;

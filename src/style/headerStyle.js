@@ -8,6 +8,8 @@ export const HeaderMain = styled.div`
 
 export const HeaderWrapper = styled.div`
     display: flex;
+    max-width: 960px;
+    margin: 0px auto;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
