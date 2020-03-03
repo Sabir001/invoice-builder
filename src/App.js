@@ -1,24 +1,49 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { createGlobalStyle } from 'styled-components';
+import Home from './components/Home';
+import About from './components/About';
+import Family from './components/About/Family';
+
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    line-height: 1.5em;
+  }
+
+  ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style:none;
+  }
+
+  a, a:hover, a:visited {
+    text-decoration:none;
+  }
+`;
+
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <GlobalStyle />
+        <Switch>
+          <Route path="/" component={Home} exact={true} />
+          <Route path="/about" component={ ({match}) => {
+            return(
+              <Switch>
+                <Route path={match.path} exact>
+                  <About />
+                </Route>
+                <Route exact path={`${match.path}/family`}>
+                  <Family />
+                </Route>
+              </Switch>
+            )
+          }} />
+        </Switch>
     </div>
   );
 }
