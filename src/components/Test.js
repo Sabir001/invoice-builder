@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from "styled-components"
 const TestDiv = styled.div`
-   color: red;
+   color: yellow;
    background: green;
 `;
 const Test = () => {
