@@ -7,6 +7,7 @@ const Button = styled.button`
     background: ${props => props.bg || "palevioletred"};
     color: #fff;
     padding: 20px 10px;
+    
     &:hover {
         background: blue;
     }
