@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Wrapper } from "../../style/common";
 
-function HomePage() {
-  return <Wrapper>Homepage</Wrapper>;
+function HomePage() { 
+  
+  return <Wrapper>
+      Homepage
+    </Wrapper>;
 }
 
 export default HomePage;

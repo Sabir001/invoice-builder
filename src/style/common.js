@@ -9,3 +9,15 @@ export const Container = styled.div`
     max-width: 960px;
     margin: 0 auto;
 `;
+
+export const Row = styled.div`
+    display: flex;
+    justify-content: flex-start;    
+    width: 100%;
+    padding: 0 15px;
+`;
+
+export const HalfWidth = styled.div`
+    flex: 1;
+    padding: 1em;
+`;
