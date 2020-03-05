@@ -1,9 +1,6 @@
 import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import Home from './components/Home';
-import About from './components/About';
-import Family from './components/About/Family';
+import InvoiceForm from './components/InvoiceForm';
 
 
 const GlobalStyle = createGlobalStyle`
@@ -29,21 +26,9 @@ function App() {
   return (
     <div className="App">
         <GlobalStyle />
-        <Switch>
-          <Route path="/" component={Home} exact={true} />
-          <Route path="/about" component={ ({match}) => {
-            return(
-              <Switch>
-                <Route path={match.path} exact>
-                  <About />
-                </Route>
-                <Route exact path={`${match.path}/family`}>
-                  <Family />
-                </Route>
-              </Switch>
-            )
-          }} />
-        </Switch>
+
+        <InvoiceForm />
+
     </div>
   );
 }
