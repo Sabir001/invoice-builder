@@ -1,34 +1,27 @@
-import React from 'react';
-import { createGlobalStyle } from 'styled-components';
-import InvoiceForm from './components/InvoiceForm';
-
-
-const GlobalStyle = createGlobalStyle`
-  body {
-    font-family: 'Nunito', sans-serif;
-    font-size: 14px;
-    line-height: 1.5em;
-  }
-
-  ul, ol {
-    margin: 0;
-    padding: 0;
-    list-style:none;
-  }
-
-  a, a:hover, a:visited {
-    text-decoration:none;
-  }
-`;
-
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import HomePage from "./component/home/homepage";
+import CreateInvoice from "./component/create-invoice/create-invoice";
+import Header from "./component/header/header";
+import { Container } from "./style/common";
 
 function App() {
   return (
     <div className="App">
-        <GlobalStyle />
+      <Router>
+        <Header />
+        <Container>
+          <Switch>
+            <Route exact path="/">
+              <HomePage />
+            </Route>
 
-        <InvoiceForm />
-
+            <Route path="/create">
+              <CreateInvoice />
+            </Route>
+          </Switch>
+        </Container>
+      </Router>
     </div>
   );
 }
