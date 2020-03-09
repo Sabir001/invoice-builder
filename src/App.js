@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
@@ -98,6 +99,34 @@ function App() {
         </React.Fragment>
         </Router>
     );
+=======
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import HomePage from "./component/home/homepage";
+import CreateInvoice from "./component/create-invoice/create-invoice";
+import Header from "./component/header/header";
+import { Container } from "./style/common";
+
+function App() {
+  return (
+    <div className="App">
+      <Router>
+        <Header />
+        <Container>
+          <Switch>
+            <Route exact path="/">
+              <HomePage />
+            </Route>
+
+            <Route path="/create">
+              <CreateInvoice />
+            </Route>
+          </Switch>
+        </Container>
+      </Router>
+    </div>
+  );
+>>>>>>> 619cda9950883468866f44209fc5e78451337534
 }
 
 export default App;
