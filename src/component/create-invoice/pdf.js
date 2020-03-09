@@ -5,7 +5,8 @@ import { PDFViewer, Document, Page, Text, View, StyleSheet } from '@react-pdf/re
 const PDFDisplay = (props) => {
 
     return <PDFViewer style={{ position: 'absolute', left: '0', top: '0', width: '100%', height: '100%' }}>
-        <MyDocument />
+      { console.log("props", props) }
+      <MyDocument />
     </PDFViewer>    
 }
 

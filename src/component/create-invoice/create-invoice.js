@@ -1,21 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ImageUploader from 'react-images-upload';
 import { Link } from "react-router-dom";
 
 import { 
     Wrapper,
     Row,
-    HalfWidth,
  } from "../../style/common";
+
 import { 
+    HalfWidthLeft,
+    HalfWidthRight,
     InputField,
     InputWrapper,
-    InputLabel
+    InvoiceTitle,
+    InlineInputLabel,
+    InlineInputField
 } from "../../style/create-style";
 
-function CreateInvoice() {
-    const [logo, setLogo] = useState('');    
+const CreateInvoice = () => {
+    const [logo, setLogo] = useState('wxww');    
     const [formData, updateFormData] = useState();
+    const [item, setItem] = useState( [ {
+        name: '',
+        quantity: '',
+        rate: '',
+        amount: ''
+    } ] );
 
     const handleBillFrom = (e) => {
         updateFormData({
@@ -31,7 +41,7 @@ function CreateInvoice() {
     return <Wrapper>
 
         <Row>
-            <HalfWidth>
+            <HalfWidthLeft>
 
                 <InputWrapper>
                     <ImageUploader
@@ -40,30 +50,70 @@ function CreateInvoice() {
                         singleImage={true}
                         onChange={(picture) => onDrop(picture)}
                         imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                        maxFileSize={2242880}
+                        maxFileSize={2048}
                     />
                 </InputWrapper>
                 
                 <InputWrapper>
+                    <InlineInputLabel>Bill From:</InlineInputLabel>
                     <InputField type="text" name="bill_to" onChange={ (e) => handleBillFrom(e) } placeholder="Who is this Invoice from?" />
                 </InputWrapper>
 
                 <InputWrapper>
-                    <InputLabel>Bill To</InputLabel>
+                    <InlineInputLabel>Bill To:</InlineInputLabel>
                     <InputField type="text" name="bill_from" onChange={ (e) => handleBillFrom(e) } placeholder="Who is this Invoice to?" />
-
-                    
                 </InputWrapper>
 
-            </HalfWidth>
+            </HalfWidthLeft>
 
-            <HalfWidth>
-                <InputField type="text" placeholder="" />
-            </HalfWidth>
+            <HalfWidthRight>
+
+                <InvoiceTitle>Invoice</InvoiceTitle>
+
+                <InputWrapper>
+                    <InlineInputLabel>Invoice No:</InlineInputLabel>
+                    <InlineInputField type="text" name="invoice_no" onChange={ (e) => handleBillFrom(e) } placeholder="ARC0001001" />
+                </InputWrapper>
+
+                <InputWrapper>
+                    <InlineInputLabel>Date:</InlineInputLabel>
+                    <InlineInputField type="text" name="date" onChange={ (e) => handleBillFrom(e) } placeholder="21/03/2020" />
+                </InputWrapper>
+
+                <InputWrapper>
+                    <InlineInputLabel>Payment Terms:</InlineInputLabel>
+                    <InlineInputField type="text" name="payment_terms" onChange={ (e) => handleBillFrom(e) } placeholder="Payment Terms" />
+                </InputWrapper>
+
+                <InputWrapper>
+                    <InlineInputLabel>Due Date:</InlineInputLabel>
+                    <InlineInputField type="text" name="due_date" onChange={ (e) => handleBillFrom(e) } placeholder="21/03/2020" />
+                </InputWrapper>
+
+            </HalfWidthRight>
         </Row>
 
         <Row>
-            <Link to="/pdf" target="_blank" state={formData}>
+            <table>
+                { item.map((data) => 
+                    <tr>
+                        <td> { data.name } </td>
+                        <td> { data.quantity } </td>
+                        <td> { data.rate } </td>
+                        <td> { data.amount } </td>
+                    </tr>
+                ) }
+            </table>
+        </Row>
+
+        <Row>
+            {console.log(logo)}
+            <Link target="_blank" to={{
+                pathname: "/pdf", 
+                state: {
+                    test: "logo"
+                }
+            }}>
               <span>Preview PDF</span>
             </Link>
         </Row>
