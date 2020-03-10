@@ -113,7 +113,7 @@ const CreateInvoice = () => {
 
         <Row>
             {console.log(logo)}
-            <Link target="_blank" to={{
+            <Link target="_self" to={{
                 pathname: "/pdf", 
                 state: {
                     test: "logo"
