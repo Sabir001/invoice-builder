@@ -1,22 +1,37 @@
-import React from 'react';
-import { PDFViewer, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import React from "react";
+import {
+  PDFViewer,
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet
+} from "@react-pdf/renderer";
 
-
-const PDFDisplay = (props) => {
-
-    return <PDFViewer style={{ position: 'absolute', left: '0', top: '0', width: '100%', height: '100%' }}>
-      { console.log("props", props) }
+const PDFDisplay = props => {
+  return (
+    <PDFViewer
+      style={{
+        position: "absolute",
+        left: "0",
+        top: "0",
+        width: "100%",
+        height: "100%"
+      }}
+    >
+      {console.log("props", props)}
       <MyDocument />
-    </PDFViewer>    
-}
+    </PDFViewer>
+  );
+};
 
 export default PDFDisplay;
 
 // Create styles
 const styles = StyleSheet.create({
   page: {
-    flexDirection: 'row',
-    backgroundColor: '#E4E4E4'
+    flexDirection: "row",
+    backgroundColor: "#E4E4E4"
   },
   section: {
     margin: 10,
