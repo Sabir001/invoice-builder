@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ImageUploader from "react-images-upload";
 import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { Wrapper, Row } from "../../style/common";
 
@@ -14,14 +16,27 @@ import {
   InlineInputField,
   TableInputField,
   TableMain,
+  TableTH,
+  TableBody,
   TableHead,
   TableRow,
-  TableTD
+  TableTD,
+  SubmitRow,
+  SubmitButton
 } from "../../style/create-style";
 
 const CreateInvoice = () => {
-  const [logo, setLogo] = useState("wxww");
-  const [formData, updateFormData] = useState();
+    const [logo, setLogo] = useState("wxww");
+    const [formData, updateFormData] = useState();
+
+    const [invoice, setinvoice] = useState('');
+    const [invoiceDate, setinvoiceDate] = useState(new Date());
+    const [createdDate, setCreatedDate] = useState(new Date());
+
+    const [dueDate, setdueDate] = useState(new Date());
+    const [dueBanalce, setdueBanalce] = useState(0);
+
+    const [submit, setSubmit] = useState(false);
 
   const [items, setItems] = useState([
     {
@@ -108,114 +123,128 @@ const CreateInvoice = () => {
           </InputWrapper>
         </HalfWidthLeft>
 
+        {/* Right */}
         <HalfWidthRight>
-          <InvoiceTitle>Invoice</InvoiceTitle>
 
-          <InputWrapper>
-            <InlineInputLabel>Invoice No:</InlineInputLabel>
-            <InlineInputField
-              type="text"
-              name="invoice_no"
-              onChange={e => handleBillFrom(e)}
-              placeholder="ARC0001001"
-            />
-          </InputWrapper>
+            <InvoiceTitle>Invoice</InvoiceTitle>
 
-          <InputWrapper>
-            <InlineInputLabel>Date:</InlineInputLabel>
-            <InlineInputField
-              type="text"
-              name="date"
-              onChange={e => handleBillFrom(e)}
-              placeholder="21/03/2020"
-            />
-          </InputWrapper>
+            <InputWrapper>
+                <InlineInputLabel>Invoice No:</InlineInputLabel>
+                <InlineInputField
+                    type="number" 
+                    name="invoice-id" 
+                    placeholder="Invoice Id" 
+                    value={invoice} 
+                    onChange={(e) => setinvoice(e.target.value)}
+                />
+            </InputWrapper>
 
-          <InputWrapper>
-            <InlineInputLabel>Payment Terms:</InlineInputLabel>
-            <InlineInputField
-              type="text"
-              name="payment_terms"
-              onChange={e => handleBillFrom(e)}
-              placeholder="Payment Terms"
-            />
-          </InputWrapper>
+            <InputWrapper>
+                <InlineInputLabel htmlFor="invoice-date">Date:</InlineInputLabel>
+                <DatePicker
+                    showPopperArrow={false}
+                    selected={invoiceDate}
+                    onChange={date => setinvoiceDate(date)}
+                />
+            </InputWrapper>
 
-          <InputWrapper>
-            <InlineInputLabel>Due Date:</InlineInputLabel>
-            <InlineInputField
-              type="text"
-              name="due_date"
-              onChange={e => handleBillFrom(e)}
-              placeholder="21/03/2020"
-            />
-          </InputWrapper>
+            <InputWrapper>
+                <InlineInputLabel htmlFor="due-date">Due Date:</InlineInputLabel>
+                <DatePicker
+                    showPopperArrow={false}
+                    selected={dueDate}
+                    onChange={(date) => setdueDate(date)}
+                />
+            </InputWrapper>
+            <InputWrapper>
+                <InlineInputLabel htmlFor="due-date">Created Date:</InlineInputLabel>
+                <DatePicker
+                    showPopperArrow={false}
+                    selected={createdDate}
+                    onChange={(date) => setCreatedDate(date)}
+                />
+            </InputWrapper>
+            <InputWrapper>
+                <InlineInputLabel htmlFor="balance-due">Balance Due:</InlineInputLabel>
+                <InlineInputField type="number" name="balance-due" placeholder="Balance due" value={dueBanalce} onChange={(e) => setdueBanalce(e.target.value)} />
+            </InputWrapper>
+          
         </HalfWidthRight>
+
       </Row>
 
       <Row>
         <TableMain>
-            <TableRow>
-                <TableHead>Item Name</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Rate</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead></TableHead>
-            </TableRow>
-          {items.map((item, i) => {
-            return (
-              <TableRow key={i}>
-                <TableTD>
-                  {" "}
-                  <TableInputField
-                    name="name"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </TableTD>
 
-                <TableTD>
-                  {" "}
-                  <TableInputField
-                    name="quantity"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </TableTD>
+            <TableHead>
+                     
+                <TableRow>
+                    <TableTH>Item Name</TableTH>
+                    <TableTH>Quantity</TableTH>
+                    <TableTH>Rate</TableTH>
+                    <TableTH>Amount</TableTH>
+                    <TableTH></TableTH>
+                </TableRow> 
 
-                <TableTD>
-                  {" "}
-                  <TableInputField
-                    name="rate"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </TableTD>
+            </TableHead>
 
-                <TableTD>
-                  {" "}
-                  <TableInputField
-                    name="amount"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </TableTD>
+            <TableBody>
+                {items.map((item, i) => {
+                    return (
+                    <TableRow key={i}>
+                        <TableTD>
+                        {" "}
+                        <TableInputField
+                            name="name"
+                            type="text"
+                            onChange={e => handleItemChange(e, i)}
+                        />
+                        </TableTD>
 
-                <TableTD>
-                    <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                </TableTD>
-                
-              </TableRow>
-            );
-          })}
-          <button onClick={e => handleAddItem(e)}>+ Line Item</button>
+                        <TableTD>
+                        {" "}
+                        <TableInputField
+                            name="quantity"
+                            type="text"
+                            onChange={e => handleItemChange(e, i)}
+                        />
+                        </TableTD>
+
+                        <TableTD>
+                        {" "}
+                        <TableInputField
+                            name="rate"
+                            type="text"
+                            onChange={e => handleItemChange(e, i)}
+                        />
+                        </TableTD>
+
+                        <TableTD>
+                        {" "}
+                        <TableInputField
+                            name="amount"
+                            type="text"
+                            onChange={e => handleItemChange(e, i)}
+                        />
+                        </TableTD>
+
+                        <TableTD>
+                            <button onClick={e => handleRemoveItem(e, i)}>X</button>
+                        </TableTD>
+                        
+                    </TableRow>
+                    );
+                })}
+            </TableBody>
+
+            <button onClick={e => handleAddItem(e)}>+ Line Item</button>
 
           {console.log(items)}
         </TableMain>
       </Row>
 
-      <Row>
-        {console.log(logo)}
+      <SubmitRow>
+        <SubmitButton onClick={(e) => setSubmit(true)}>Submit</SubmitButton>
         <Link
           target="_blank"
           to={{
@@ -227,7 +256,8 @@ const CreateInvoice = () => {
         >
           <span>Preview PDF</span>
         </Link>
-      </Row>
+      </SubmitRow>
+
     </Wrapper>
   );
 };

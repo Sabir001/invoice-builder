@@ -15,6 +15,12 @@ export const HalfWidthRight = styled.div`
     flex: 1;
     padding: 1em;
     text-align: right;
+
+    .react-datepicker-wrapper input {
+        width: auto;
+        padding: 10px;
+        box-sizing : border-box;
+    }
 `;
 
 export const InputField = styled.input`
@@ -58,7 +64,16 @@ export const TableMain = styled.table`
     width: 100%;
 `;
 
-export const TableHead = styled.th`
+export const TableTH = styled.th`    
+    padding: 10px;
+`;
+
+export const TableHead = styled.thead`
+    background-color:  #333333;
+    color: #ffffff;
+`;
+
+export const TableBody = styled.tbody`
     
 `;
 
@@ -70,8 +85,30 @@ export const TableTD = styled.td`
     
 `;
 
+export const InvoiceItem = styled.input`
+    
+`;
+
 export const TableInputField = styled.input`
     width: 100%;
     padding: 5px 10px;
     box-sizing : border-box;
+`;
+
+export const SubmitRow = styled.div`
+    margin: 2em 0 0 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 0 15px;
+`;
+
+export const SubmitButton = styled.button`
+    background-color:  #3a98d0;
+    border: 0px;
+    padding: 10px 30px;
+    border-radius: 4px;
+    color:  #fff;
+    margin: 0 15px 0 0;
 `;
