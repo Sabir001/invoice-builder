@@ -13,27 +13,22 @@ function App() {
         <Header />
         <Container>
           <Switch>
-
             <Route exact path="/">
               <HomePage />
             </Route>
 
             <Route path="/create">
               <CreateInvoice />
-
             </Route>
 
             <Route path="/pdf">
               <PDFDisplay />
             </Route>
-
           </Switch>
-
         </Container>
       </Router>
     </div>
   );
-
 }
 
 export default App;

@@ -14,29 +14,22 @@ import {
   InvoiceTitle,
   InlineInputLabel,
   InlineInputField,
-  TableInputField,
   TableMain,
-  TableTH,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableTD,
   SubmitRow,
   SubmitButton
 } from "../../style/create-style";
 
 const CreateInvoice = () => {
-  const [logo, setLogo] = useState("wxww");
-  const [formData, updateFormData] = useState();
+  const [logo, setLogo] = useState();
+
+  const [billFrom, setBillFrom] = useState("");
+  const [billTo, setBillTo] = useState("");
 
   const [invoice, setinvoice] = useState("");
   const [invoiceDate, setinvoiceDate] = useState(new Date());
-  const [createdDate, setCreatedDate] = useState(new Date());
-
-  const [dueDate, setdueDate] = useState(new Date());
+  const [terms, setTerms] = useState("");
+  const [dueDate, setDueDate] = useState(new Date());
   const [dueBanalce, setdueBanalce] = useState(0);
-
-  const [submit, setSubmit] = useState(false);
 
   const [items, setItems] = useState([
     {
@@ -47,11 +40,20 @@ const CreateInvoice = () => {
     }
   ]);
 
-  const handleBillFrom = e => {
-    updateFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const [submit, setSubmit] = useState(false);
+
+  const handleSubmit = () => {
+    localStorage.clear();
+    localStorage.setItem("billFrom", billFrom);
+    localStorage.setItem("billTo", billTo);
+    localStorage.setItem("invoice_no", invoice);
+    localStorage.setItem("invoiceDate", invoiceDate);
+    localStorage.setItem("dueDate", dueDate);
+    localStorage.setItem("terms", terms);
+    localStorage.setItem("dueBanalce", dueBanalce);
+    localStorage.setItem("items", items);
+
+    setSubmit(true);
   };
 
   const handleRemoveItem = (e, i) => {
@@ -107,8 +109,9 @@ const CreateInvoice = () => {
             <InputField
               type="text"
               name="bill_to"
-              onChange={e => handleBillFrom(e)}
+              onChange={e => setBillFrom(e.target.value)}
               placeholder="Who is this Invoice from?"
+              value={billFrom}
             />
           </InputWrapper>
 
@@ -117,8 +120,9 @@ const CreateInvoice = () => {
             <InputField
               type="text"
               name="bill_from"
-              onChange={e => handleBillFrom(e)}
+              onChange={e => setBillTo(e.target.value)}
               placeholder="Who is this Invoice to?"
+              value={billTo}
             />
           </InputWrapper>
         </HalfWidthLeft>
@@ -148,23 +152,27 @@ const CreateInvoice = () => {
           </InputWrapper>
 
           <InputWrapper>
+            <InlineInputLabel htmlFor="due-date">
+              Payment Terms:
+            </InlineInputLabel>
+            <InlineInputField
+              type="text"
+              name="payment_terms"
+              placeholder="Terms"
+              value={terms}
+              onChange={e => setTerms(e.target.value)}
+            />
+          </InputWrapper>
+
+          <InputWrapper>
             <InlineInputLabel htmlFor="due-date">Due Date:</InlineInputLabel>
             <DatePicker
               showPopperArrow={false}
               selected={dueDate}
-              onChange={date => setdueDate(date)}
+              onChange={date => setDueDate(date)}
             />
           </InputWrapper>
-          <InputWrapper>
-            <InlineInputLabel htmlFor="due-date">
-              Created Date:
-            </InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={createdDate}
-              onChange={date => setCreatedDate(date)}
-            />
-          </InputWrapper>
+
           <InputWrapper>
             <InlineInputLabel htmlFor="balance-due">
               Balance Due:
@@ -182,86 +190,84 @@ const CreateInvoice = () => {
 
       <Row>
         <TableMain>
-          <TableHead>
-            <TableRow>
-              <TableTH>Item Name</TableTH>
-              <TableTH>Quantity</TableTH>
-              <TableTH>Rate</TableTH>
-              <TableTH>Amount</TableTH>
-              <TableTH>Delete</TableTH>
-            </TableRow>
-          </TableHead>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
 
-          <TableBody>
+          <tbody>
             {items.map((item, i) => {
               return (
-                <TableRow key={i}>
-                  <TableTD>
+                <tr key={i}>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="name"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="quantity"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="rate"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="amount"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                  </TableTD>
-                </TableRow>
+                  </td>
+                </tr>
               );
             })}
-            <TableRow>
-              <TableTD>
-                <button onClick={e => handleAddItem(e)}>+ Line Item</button>
-              </TableTD>
-            </TableRow>
-          </TableBody>
 
-          {console.log(items)}
+            <tr>
+              <td>
+                <button onClick={e => handleAddItem(e)}>+ Line Item</button>
+              </td>
+            </tr>
+          </tbody>
         </TableMain>
       </Row>
 
       <SubmitRow>
-        <SubmitButton onClick={e => setSubmit(true)}>Submit</SubmitButton>
-        <Link
+        <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
+        {submit && <Link
+          className={'show_pdf'}
           target="_blank"
           to={{
-            pathname: "/pdf",
-            state: {
-              test: "logo"
-            }
+            pathname: "/pdf"
           }}
         >
-          <span>Preview PDF</span>
-        </Link>
+          <span>Show PDF</span>
+        </Link>}
+        
       </SubmitRow>
     </Wrapper>
   );
