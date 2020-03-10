@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Wrapper } from "../../style/common";
 
-function HomePage() {
-  return <Wrapper>Homepage</Wrapper>;
+const HomePage = (props) => {
+
+  
+  
+  return <Wrapper>
+    { console.log("props", props) }
+      Homepage
+    </Wrapper>;
 }
 
 export default HomePage;
