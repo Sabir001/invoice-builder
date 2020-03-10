@@ -2,6 +2,8 @@ import React, {useEffect,useState} from 'react';
 import { InvoiceItem } from "../../style/InvoiceItem";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Link } from "react-router-dom";
+import {HeaderList} from "../../style/headerStyle";
 
 const InvoiceRight = () => {
     const [invoice, setinvoice] = useState('');
@@ -50,6 +52,10 @@ const InvoiceRight = () => {
                 <label htmlFor="balance-due">Balance Due</label>
                 <input type="number" name="balance-due" placeholder="Balance due" value={dueBanalce} onChange={(e) => setdueBanalce(e.target.value)} />
             </InvoiceItem>
+
+            <Link to="/pdf">
+                <span>pdf</span>
+            </Link>
             <button onClick={(e) => setSubmit(true)}>Submit</button>
 
             <div>

@@ -1,7 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./component/home/homepage";
+import CreatePdf from "./component/Pdf/create-pdf";
 import InvoiceRight from "./component/Form-Right/invoic-right";
+
 import CreateInvoice from "./component/create-invoice/create-invoice";
 import Header from "./component/header/header";
 import { Container } from "./style/common";
@@ -15,13 +17,19 @@ function App() {
           <Switch>
             <Route exact path="/">
               <HomePage />
+              <InvoiceRight />
             </Route>
 
             <Route path="/create">
               <CreateInvoice />
+
+            </Route>
+
+            <Route path="/pdf">
+              <CreatePdf />
             </Route>
           </Switch>
-          <InvoiceRight />
+
         </Container>
       </Router>
     </div>
