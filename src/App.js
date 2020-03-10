@@ -23,9 +23,7 @@ function App() {
 
             </Route>
 
-            <Route path="/pdf">
-              <PDFDisplay />
-            </Route>
+            <Route path="/pdf" component={PDFDisplay} />
 
           </Switch>
 

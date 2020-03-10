@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 export const HalfWidthLeft = styled.div`
     flex: 1;
-    padding: 1em;
+    padding-right: 1em;
 
     label {
         width: 70px;
@@ -13,7 +13,7 @@ export const HalfWidthLeft = styled.div`
 
 export const HalfWidthRight = styled.div`
     flex: 1;
-    padding: 1em;
+    padding-left: 1em;
     text-align: right;
 
     .react-datepicker-wrapper input {
@@ -71,6 +71,10 @@ export const TableTH = styled.th`
 export const TableHead = styled.thead`
     background-color:  #333333;
     color: #ffffff;
+
+    th:last-child {
+        display:none;
+    }
 `;
 
 export const TableBody = styled.tbody`
