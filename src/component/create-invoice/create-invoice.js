@@ -14,7 +14,12 @@ import {
     InputWrapper,
     InvoiceTitle,
     InlineInputLabel,
-    InlineInputField
+    InlineInputField,
+    TableInputField,
+    TableMain,
+    TableHead,
+    TableRow,
+    TableTD
 } from "../../style/create-style";
 
 const CreateInvoice = () => {
@@ -94,16 +99,16 @@ const CreateInvoice = () => {
         </Row>
 
         <Row>
-            <table>
+            <TableMain>
                 { item.map((data) => 
-                    <tr>
-                        <td> { data.name } </td>
-                        <td> { data.quantity } </td>
-                        <td> { data.rate } </td>
-                        <td> { data.amount } </td>
-                    </tr>
+                    <TableRow>
+                        <TableTD> <TableInputField type="text" value={ data.name } /> </TableTD>
+                        <TableTD> <TableInputField type="text" value={ data.quantity } /> </TableTD>
+                        <TableTD> <TableInputField type="text" value={ data.rate } /> </TableTD>
+                        <TableTD> <TableInputField type="text" value={ data.amount } /> </TableTD>
+                    </TableRow>
                 ) }
-            </table>
+            </TableMain>
         </Row>
 
         <Row>

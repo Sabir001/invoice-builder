@@ -53,3 +53,25 @@ export const InvoiceTitle = styled.h2`
     font-size: 2em;
     font-weight: 100;
 `;
+
+export const TableMain = styled.table`
+    width: 100%;
+`;
+
+export const TableHead = styled.th`
+    
+`;
+
+export const TableRow = styled.tr`
+    
+`;
+
+export const TableTD = styled.td`
+    
+`;
+
+export const TableInputField = styled.input`
+    width: 100%;
+    padding: 5px 10px;
+    box-sizing : border-box;
+`;
