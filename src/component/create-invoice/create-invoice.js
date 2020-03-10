@@ -14,13 +14,7 @@ import {
   InvoiceTitle,
   InlineInputLabel,
   InlineInputField,
-  TableInputField,
   TableMain,
-  TableTH,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableTD,
   SubmitRow,
   SubmitButton
 } from "../../style/create-style";
@@ -182,63 +176,63 @@ const CreateInvoice = () => {
 
       <Row>
         <TableMain>
-          <TableHead>
-            <TableRow>
-              <TableTH>Item Name</TableTH>
-              <TableTH>Quantity</TableTH>
-              <TableTH>Rate</TableTH>
-              <TableTH>Amount</TableTH>
-              <TableTH></TableTH>
-            </TableRow>
-          </TableHead>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
 
-          <TableBody>
+          <tbody>
             {items.map((item, i) => {
               return (
-                <TableRow key={i}>
-                  <TableTD>
+                <tr key={i}>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="name"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="quantity"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="rate"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     {" "}
-                    <TableInputField
+                    <input
                       name="amount"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
                     />
-                  </TableTD>
+                  </td>
 
-                  <TableTD>
+                  <td>
                     <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                  </TableTD>
-                </TableRow>
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
+          </tbody>
 
           <button onClick={e => handleAddItem(e)}>+ Line Item</button>
 

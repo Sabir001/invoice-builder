@@ -60,30 +60,29 @@ export const InvoiceTitle = styled.h2`
 
 export const TableMain = styled.table`
   width: 100%;
+  thead {
+    background-color: #333333;
+    color: #ffffff;
+  }
+
+  tbody {
+    tr {
+      td {
+        input {
+          width: 100%;
+          padding: 5px 10px;
+          box-sizing: border-box;
+        }
+      }
+    }
+  }
 `;
 
 export const TableTH = styled.th`
   padding: 10px;
 `;
 
-export const TableHead = styled.thead`
-  background-color: #333333;
-  color: #ffffff;
-`;
-
-export const TableBody = styled.tbody``;
-
-export const TableRow = styled.tr``;
-
-export const TableTD = styled.td``;
-
 export const InvoiceItem = styled.input``;
-
-export const TableInputField = styled.input`
-  width: 100%;
-  padding: 5px 10px;
-  box-sizing: border-box;
-`;
 
 export const SubmitRow = styled.div`
   margin: 2em 0 0 0;
