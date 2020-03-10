@@ -6,11 +6,14 @@ import "react-datepicker/dist/react-datepicker.css";
 const InvoiceRight = () => {
     const [invoice, setinvoice] = useState('');
     const [invoiceDate, setinvoiceDate] = useState(new Date());
-    const [terms, setterms] = useState('');
+    const [createdDate, setCreatedDate] = useState(new Date());
+
     const [dueDate, setdueDate] = useState(new Date());
     const [dueBanalce, setdueBanalce] = useState(0);
 
     const [submit, setSubmit] = useState(false);
+
+
     return (
         <div>
             <InvoiceItem>
@@ -20,19 +23,27 @@ const InvoiceRight = () => {
             <InvoiceItem>
                 <label htmlFor="invoice-date">Date</label>
                 <DatePicker
+
+                    showPopperArrow={false}
                     selected={invoiceDate}
-                    onChange={(date) => setinvoiceDate(date)}
+                    onChange={date => setinvoiceDate(date)}
                 />
             </InvoiceItem>
-            <InvoiceItem>
-                <label htmlFor="paymets-terms">Payment Terms</label>
-                <input name="paymets-terms" placeholder="paymets terms" value={terms} onChange={(e) => setterms(e.target.value)}/>
-            </InvoiceItem>
+
             <InvoiceItem>
                 <label htmlFor="due-date">Due Date</label>
                 <DatePicker
+                    showPopperArrow={false}
                     selected={dueDate}
                     onChange={(date) => setdueDate(date)}
+                />
+            </InvoiceItem>
+            <InvoiceItem>
+                <label htmlFor="due-date">Created Date</label>
+                <DatePicker
+                    showPopperArrow={false}
+                    selected={createdDate}
+                    onChange={(date) => setCreatedDate(date)}
                 />
             </InvoiceItem>
             <InvoiceItem>
@@ -44,13 +55,17 @@ const InvoiceRight = () => {
             <div>
                 {
                     submit &&
+                    (
                         <p>
-                            Invoice id: {invoice} <br/>
 
-                        Terms: {terms} <br/>
-                        Due Banalce: {dueBanalce} <br/>
+                            Invoice id: {invoice} <br/>
+                            Invocie Date: {invoiceDate.getDate()+"-"+(invoiceDate.getMonth()+1)+"-"+invoiceDate.getFullYear()} <br/>
+                            Created Date: {createdDate.getDate()+"-"+(createdDate.getMonth()+1)+"-"+createdDate.getFullYear()} <br/>
+                            Due Date: {dueDate.getDate()+"-"+(dueDate.getMonth()+1)+"-"+dueDate.getFullYear()} <br/>
+                            Due Banalce: {dueBanalce} <br/>
 
                         </p>
+                    )
                 }
             </div>
         </div>
