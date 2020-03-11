@@ -147,6 +147,7 @@ const CreateInvoice = () => {
             <DatePicker
               showPopperArrow={false}
               selected={invoiceDate}
+              dateFormat="dd-mm-yyyy"
               onChange={date => setinvoiceDate(date)}
             />
           </InputWrapper>
@@ -169,6 +170,7 @@ const CreateInvoice = () => {
             <DatePicker
               showPopperArrow={false}
               selected={dueDate}
+              dateFormat="dd-mm-yyyy"
               onChange={date => setDueDate(date)}
             />
           </InputWrapper>
@@ -182,6 +184,7 @@ const CreateInvoice = () => {
               name="balance-due"
               placeholder="Balance due"
               value={dueBanalce}
+              dateFormat="dd-mm-yyyy"
               onChange={e => setdueBanalce(e.target.value)}
             />
           </InputWrapper>

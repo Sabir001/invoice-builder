@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import {
   PDFViewer,
   Document,
@@ -45,15 +46,21 @@ const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-        <Text>Bill From: { localStorage.getItem('billFrom') }</Text>
-        <Text>Bill To: { localStorage.getItem('billTo') }</Text>
+        <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
+        <Text>Bill To: {localStorage.getItem("billTo")}</Text>
       </View>
       <View style={styles.section}>
-      <Text>Invoice No: { localStorage.getItem('invoice_no') }</Text>
-      <Text>Invoice Date: { localStorage.getItem('invoiceDate') }</Text>
-      <Text>Due Date: { localStorage.getItem('dueDate') }</Text>
-      <Text>Invoice Terms: { localStorage.getItem('terms') }</Text>
-      <Text>Due Balance: { localStorage.getItem('dueBanalce') }</Text>
+        <Text>Invoice No: {localStorage.getItem("invoice_no")}</Text>
+        <Text>
+          Invoice Date:{" "}
+          {moment(localStorage.getItem("invoiceDate")).format("DD-MM-YYYY")}
+        </Text>
+        <Text>
+          Due Date:{" "}
+          {moment(localStorage.getItem("dueDate")).format("DD-MM-YYYY")}
+        </Text>
+        <Text>Invoice Terms: {localStorage.getItem("terms")}</Text>
+        <Text>Due Balance: {localStorage.getItem("dueBanalce")}</Text>
       </View>
     </Page>
   </Document>
