@@ -130,7 +130,6 @@ const CreateInvoice = () => {
         </Row>
       </div>
 
-
       <div className="body">
         <Row>
           <HalfWidthLeft>
@@ -158,11 +157,11 @@ const CreateInvoice = () => {
               />
             </InputWrapper>
           </HalfWidthRight>
-          </Row>
+        </Row>
       </div>
 
       <div className="info-and-numbers">
-          <Row>
+        <Row>
           <InputWrapper>
             <InlineInputLabel>Voucher No:</InlineInputLabel>
             <InputField type="text" />
@@ -182,11 +181,10 @@ const CreateInvoice = () => {
             <InlineInputLabel>Created At:</InlineInputLabel>
             <InputField type="text" />
           </InputWrapper>
-          </Row>
+        </Row>
       </div>
 
       <Row>
-
         <TableMain>
           <thead>
             <tr>
@@ -252,6 +250,43 @@ const CreateInvoice = () => {
             </tr>
           </tbody>
         </TableMain>
+      </Row>
+
+      <Row>
+        <HalfWidthLeft></HalfWidthLeft>
+        <HalfWidthRight>
+          <div className="column-to-the-right">
+            <div className="discount-section">
+              <div className="title">Discount: </div>
+              <select>
+                <option value="amount">Amount</option>
+                <option value="percentage">Percentage</option>
+              </select>
+              <input type="text" value="40%" />
+            </div>
+
+            <div className="taxes">
+              <button>+ Add Tax</button>
+            </div>
+
+            <div class="total-board">
+              Total: <span>$35</span>
+            </div>
+          </div>
+        </HalfWidthRight>
+      </Row>
+
+      <Row>
+        <div class="footer">
+          <div>
+            <label>Title: </label>
+            <input type="text" />
+          </div>
+          <div>
+            <label>Content: </label>
+            <textarea placeholder="footer content"></textarea>
+          </div>
+        </div>
       </Row>
 
       <SubmitRow>
