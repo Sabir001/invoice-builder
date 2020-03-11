@@ -3,7 +3,7 @@ import { PDFViewer, Document, Page, Text, View, StyleSheet } from '@react-pdf/re
 
 
 const PDFDisplay = (props) => {
-  console.log(props);
+  console.log({props});
 
     // return(
     //   <PDFViewer style={{ position: 'absolute', left: '0', top: '0', width: '100%', height: '100%' }}>
