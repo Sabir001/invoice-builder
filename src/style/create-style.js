@@ -99,7 +99,7 @@ export const SubmitRow = styled.div`
     border-radius: 4px;
     color: #fff;
     margin: 0 15px 0 0;
-    font-size: .9em;
+    font-size: 0.9em;
     text-decoration: none;
   }
 `;
