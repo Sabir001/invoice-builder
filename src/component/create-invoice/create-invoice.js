@@ -69,7 +69,6 @@ const CreateInvoice = () => {
     setSubmit(true);
   };
 
-
   const onDrop = picture => {
     setLogo(picture);
   };
@@ -127,6 +126,21 @@ const CreateInvoice = () => {
     updateDiscount({ ...discount, ...{ discountAmount: value } });
   };
 
+  // Handle discount part
+  useEffect(() => {
+    let newSubTotal;
+
+    if (discount.type === "amount") {
+      newSubTotal = subTotal - parseInt(discount.discountAmount);
+    }
+
+    if (discount.type === "percentage") {
+      newSubTotal =
+        subTotal - (subTotal / 100) * parseFloat(`.${discount.discountAmount}`);
+    }
+
+    updateTotal(newSubTotal);
+  }, [discount]);
 
   // Handle Tax Part
   const handleMultipleTaxField = e => {
@@ -146,7 +160,6 @@ const CreateInvoice = () => {
   };
 
   const handleTaxChange = (e, index) => {
-
     const newTaxes = [...taxes];
     newTaxes[index] = {
       ...taxes[index],
@@ -165,12 +178,10 @@ const CreateInvoice = () => {
 
   // calculating total
   useEffect(() => {
-
+    console.log(totalTax);
     let updatedTotalWithTax = subTotal + (subTotal * totalTax);
     updateTotal(updatedTotalWithTax);
-
   }, [subTotal, totalTax]);
-
 
   return (
     <Wrapper>
@@ -305,7 +316,7 @@ const CreateInvoice = () => {
                       name="amount"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
-                      value={item.amount > 0 ? item.amount : ""}
+                      value={item.amount > 0 ? item.amount : 0}
                     />
                   </td>
 
