@@ -89,22 +89,22 @@ const CreateInvoice = () => {
     setLogo(picture);
   };
 
-  let finalData = {
-    logo: logo,
-    formData: formData,
-    invoice: invoice,
-    invoiceDate: invoiceDate,
-    createdDate: createdDate,
-    dueDate: dueDate,
-    dueBanalce: dueBanalce,
-    items: items
-  };
+  // let finalData = {
+  //   logo: logo,
+  //   formData: formData,
+  //   invoice: invoice,
+  //   invoiceDate: invoiceDate,
+  //   createdDate: createdDate,
+  //   dueDate: dueDate,
+  //   dueBanalce: dueBanalce,
+  //   items: items
+  // };
 
   return (
     <Wrapper>
       <Row>
-        <HalfWidthLeft>
-          <InputWrapper>
+        <div className="header">
+          <HalfWidthLeft>
             <ImageUploader
               withIcon={false}
               withPreview={true}
@@ -113,172 +113,161 @@ const CreateInvoice = () => {
               imgExtension={[".jpg", ".gif", ".png", ".gif"]}
               maxFileSize={2048}
             />
-          </InputWrapper>
+          </HalfWidthLeft>
 
+          <HalfWidthRight>
+            <InputWrapper>
+              <InlineInputLabel>Invoice No:</InlineInputLabel>
+              <InlineInputField
+                type="number"
+                name="invoice-id"
+                placeholder="Invoice Id"
+                value={invoice}
+                onChange={e => setinvoice(e.target.value)}
+              />
+            </InputWrapper>
+          </HalfWidthRight>
+        </div>
+
+        <div className="body">
+          <HalfWidthLeft>
+            <InputWrapper>
+              <InlineInputLabel>Bill From:</InlineInputLabel>
+              <InputField
+                type="text"
+                name="bill_to"
+                onChange={e => setBillFrom(e.target.value)}
+                placeholder="Who is this Invoice from?"
+                value={billFrom}
+              />
+            </InputWrapper>
+          </HalfWidthLeft>
+
+          <HalfWidthRight>
+            <InputWrapper>
+              <InlineInputLabel>Bill To:</InlineInputLabel>
+              <InputField
+                type="text"
+                name="bill_from"
+                onChange={e => setBillTo(e.target.value)}
+                placeholder="Who is this Invoice to?"
+                value={billTo}
+              />
+            </InputWrapper>
+          </HalfWidthRight>
+        </div>
+
+        <div className="info-and-numbers">
           <InputWrapper>
-            <InlineInputLabel>Bill From:</InlineInputLabel>
+            <InlineInputLabel>Voucher No:</InlineInputLabel>
             <InputField
               type="text"
-              name="bill_to"
-              onChange={e => setBillFrom(e.target.value)}
-              placeholder="Who is this Invoice from?"
-              value={billFrom}
             />
           </InputWrapper>
 
           <InputWrapper>
-            <InlineInputLabel>Bill To:</InlineInputLabel>
+            <InlineInputLabel>Transaction Date:</InlineInputLabel>
             <InputField
               type="text"
-              name="bill_from"
-              onChange={e => setBillTo(e.target.value)}
-              placeholder="Who is this Invoice to?"
-              value={billTo}
-            />
-          </InputWrapper>
-        </HalfWidthLeft>
-
-        {/* Right */}
-        <HalfWidthRight>
-          <InvoiceTitle>Invoice</InvoiceTitle>
-
-          <InputWrapper>
-            <InlineInputLabel>Invoice No:</InlineInputLabel>
-            <InlineInputField
-              type="number"
-              name="invoice-id"
-              placeholder="Invoice Id"
-              value={invoice}
-              onChange={e => setinvoice(e.target.value)}
             />
           </InputWrapper>
 
           <InputWrapper>
-            <InlineInputLabel htmlFor="invoice-date">Date:</InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={invoiceDate}
-              onChange={date => setinvoiceDate(date)}
-            />
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel htmlFor="due-date">
-              Payment Terms:
-            </InlineInputLabel>
-            <InlineInputField
+            <InlineInputLabel>Due Date:</InlineInputLabel>
+            <InputField
               type="text"
-              name="payment_terms"
-              placeholder="Terms"
-              value={terms}
-              onChange={e => setTerms(e.target.value)}
             />
           </InputWrapper>
 
           <InputWrapper>
-            <InlineInputLabel htmlFor="due-date">Due Date:</InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={dueDate}
-              onChange={date => setDueDate(date)}
+            <InlineInputLabel>Created At:</InlineInputLabel>
+            <InputField
+              type="text"
             />
           </InputWrapper>
+        </div>
 
-          <InputWrapper>
-            <InlineInputLabel htmlFor="balance-due">
-              Balance Due:
-            </InlineInputLabel>
-            <InlineInputField
-              type="number"
-              name="balance-due"
-              placeholder="Balance due"
-              value={dueBanalce}
-              onChange={e => setdueBanalce(e.target.value)}
-            />
-          </InputWrapper>
-        </HalfWidthRight>
-      </Row>
-
-      <Row>
         <TableMain>
-          <thead>
-            <tr>
-              <th>Item Name</th>
-              <th>Quantity</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th></th>
-            </tr>
-          </thead>
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
 
-          <tbody>
-            {items.map((item, i) => {
-              return (
-                <tr key={i}>
-                  <td>
-                    {" "}
-                    <input
-                      name="name"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+        <tbody>
+          {items.map((item, i) => {
+            return (
+              <tr key={i}>
+                <td>
+                  {" "}
+                  <input
+                    name="name"
+                    type="text"
+                    onChange={e => handleItemChange(e, i)}
+                  />
+                </td>
 
-                  <td>
-                    {" "}
-                    <input
-                      name="quantity"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+                <td>
+                  {" "}
+                  <input
+                    name="quantity"
+                    type="text"
+                    onChange={e => handleItemChange(e, i)}
+                  />
+                </td>
 
-                  <td>
-                    {" "}
-                    <input
-                      name="rate"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+                <td>
+                  {" "}
+                  <input
+                    name="rate"
+                    type="text"
+                    onChange={e => handleItemChange(e, i)}
+                  />
+                </td>
 
-                  <td>
-                    {" "}
-                    <input
-                      name="amount"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+                <td>
+                  {" "}
+                  <input
+                    name="amount"
+                    type="text"
+                    onChange={e => handleItemChange(e, i)}
+                  />
+                </td>
 
-                  <td>
-                    <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                  </td>
-                </tr>
-              );
-            })}
+                <td>
+                  <button onClick={e => handleRemoveItem(e, i)}>X</button>
+                </td>
+              </tr>
+            );
+          })}
 
-            <tr>
-              <td>
-                <button onClick={e => handleAddItem(e)}>+ Line Item</button>
-              </td>
-            </tr>
-          </tbody>
-        </TableMain>
+          <tr>
+            <td>
+              <button onClick={e => handleAddItem(e)}>+ Line Item</button>
+            </td>
+          </tr>
+        </tbody>
+      </TableMain>
+      
       </Row>
 
       <SubmitRow>
         <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
-        {submit && <Link
-          className={'show_pdf'}
-          target="_blank"
-          to={{
-            pathname: "/pdf"
-          }}
-        >
-          <span>Show PDF</span>
-        </Link>}
-        
+        {submit && (
+          <Link
+            className={"show_pdf"}
+            target="_blank"
+            to={{
+              pathname: "/pdf"
+            }}
+          >
+            <span>Show PDF</span>
+          </Link>
+        )}
       </SubmitRow>
     </Wrapper>
   );
