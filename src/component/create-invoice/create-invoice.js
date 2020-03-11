@@ -160,99 +160,116 @@ const CreateInvoice = () => {
         <div className="info-and-numbers">
           <InputWrapper>
             <InlineInputLabel>Voucher No:</InlineInputLabel>
-            <InputField
-              type="text"
-            />
+            <InputField type="text" />
           </InputWrapper>
 
           <InputWrapper>
             <InlineInputLabel>Transaction Date:</InlineInputLabel>
-            <InputField
-              type="text"
-            />
+            <InputField type="text" />
           </InputWrapper>
 
           <InputWrapper>
             <InlineInputLabel>Due Date:</InlineInputLabel>
-            <InputField
-              type="text"
-            />
+            <InputField type="text" />
           </InputWrapper>
 
           <InputWrapper>
             <InlineInputLabel>Created At:</InlineInputLabel>
-            <InputField
-              type="text"
-            />
+            <InputField type="text" />
           </InputWrapper>
         </div>
 
         <TableMain>
-        <thead>
-          <tr>
-            <th>Item Name</th>
-            <th>Quantity</th>
-            <th>Rate</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {items.map((item, i) => {
-            return (
-              <tr key={i}>
-                <td>
-                  {" "}
-                  <input
-                    name="name"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </td>
+          <tbody>
+            {items.map((item, i) => {
+              return (
+                <tr key={i}>
+                  <td>
+                    {" "}
+                    <input
+                      name="name"
+                      type="text"
+                      onChange={e => handleItemChange(e, i)}
+                    />
+                  </td>
 
-                <td>
-                  {" "}
-                  <input
-                    name="quantity"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </td>
+                  <td>
+                    {" "}
+                    <input
+                      name="quantity"
+                      type="text"
+                      onChange={e => handleItemChange(e, i)}
+                    />
+                  </td>
 
-                <td>
-                  {" "}
-                  <input
-                    name="rate"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </td>
+                  <td>
+                    {" "}
+                    <input
+                      name="rate"
+                      type="text"
+                      onChange={e => handleItemChange(e, i)}
+                    />
+                  </td>
 
-                <td>
-                  {" "}
-                  <input
-                    name="amount"
-                    type="text"
-                    onChange={e => handleItemChange(e, i)}
-                  />
-                </td>
+                  <td>
+                    {" "}
+                    <input
+                      name="amount"
+                      type="text"
+                      onChange={e => handleItemChange(e, i)}
+                    />
+                  </td>
 
-                <td>
-                  <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                </td>
-              </tr>
-            );
-          })}
+                  <td>
+                    <button onClick={e => handleRemoveItem(e, i)}>X</button>
+                  </td>
+                </tr>
+              );
+            })}
 
-          <tr>
-            <td>
-              <button onClick={e => handleAddItem(e)}>+ Line Item</button>
-            </td>
-          </tr>
-        </tbody>
-      </TableMain>
-      
+            <tr>
+              <td>
+                <button onClick={e => handleAddItem(e)}>+ Line Item</button>
+              </td>
+            </tr>
+          </tbody>
+        </TableMain>
+
+        <div className="column-to-the-right">
+          <div className="discount-section">
+            <div className="title">Discount: </div>
+            <select>
+              <option value="amount">Amount</option>
+              <option value="percentage">Percentage</option>
+            </select>
+            <input type="text" value="40%" />
+          </div>
+
+          <div className="taxes">
+            <button>+ Add Tax</button>
+          </div>
+
+          <div class="total-board">
+            Total: <span>$35</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          <label>Title: </label>
+          <input type="text" />
+          <label>Content: </label>
+          <textarea placeholder="footer content"></textarea>
+        </div>
       </Row>
 
       <SubmitRow>
