@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ImageUploader from "react-images-upload";
 import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
@@ -31,12 +31,15 @@ const CreateInvoice = () => {
   const [dueDate, setDueDate] = useState(new Date());
   const [dueBanalce, setdueBanalce] = useState(0);
 
+
+  const [subTotal, updateSubTotal] = useState(0);
+
   const [items, setItems] = useState([
     {
       name: "",
       quantity: "",
       rate: "",
-      amount: ""
+      amount: 0
     }
   ]);
 
@@ -69,7 +72,7 @@ const CreateInvoice = () => {
       name: "",
       quantity: "",
       rate: "",
-      amount: ""
+      amount: 0
     };
 
     setItems([...items, newItem]);
@@ -99,6 +102,17 @@ const CreateInvoice = () => {
   //   dueBanalce: dueBanalce,
   //   items: items
   // };
+
+  useEffect(() => {
+
+    let subTotalState = items.reduce( (prev, next) => {
+      return prev += parseInt(next.amount);
+    }, 0);
+
+    updateSubTotal(subTotalState);
+
+  }, [items]);
+
 
   return (
     <Wrapper>
@@ -244,9 +258,10 @@ const CreateInvoice = () => {
             })}
 
             <tr>
-              <td>
+              <td colSpan="3">
                 <button onClick={e => handleAddItem(e)}>+ Line Item</button>
               </td>
+              <td><div className="sub-total">Sub Total: {subTotal}</div></td>
             </tr>
           </tbody>
         </TableMain>
