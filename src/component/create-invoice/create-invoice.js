@@ -15,6 +15,7 @@ import {
   InlineInputLabel,
   InlineInputField,
   TableMain,
+  Discounts,
   SubmitRow,
   SubmitButton
 } from "../../style/create-style";
@@ -31,9 +32,6 @@ const CreateInvoice = () => {
   const [dueDate, setDueDate] = useState(new Date());
   const [dueBanalce, setdueBanalce] = useState(0);
 
-
-  const [subTotal, updateSubTotal] = useState(0);
-
   const [items, setItems] = useState([
     {
       name: "",
@@ -43,7 +41,19 @@ const CreateInvoice = () => {
     }
   ]);
 
+  const [subTotal, updateSubTotal] = useState(0);
+
+  const [discount, updateDiscount] = useState({
+    type: "amount",
+    discountAmount: 0
+  });
+
+  const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0 }]);
+  const [totalTax, updateTotalTax] = useState(0);
+
   const [submit, setSubmit] = useState(false);
+
+  const [totoal, updateTotal] = useState(0);
 
   const handleSubmit = () => {
     localStorage.clear();
@@ -59,10 +69,17 @@ const CreateInvoice = () => {
     setSubmit(true);
   };
 
+
+  const onDrop = picture => {
+    setLogo(picture);
+  };
+
   const handleRemoveItem = (e, i) => {
     e.preventDefault();
 
-    setItems(items.filter((item, index) => index !== i));
+    let newItems = items.filter((item, index) => i !== index);
+
+    setItems(newItems);
   };
 
   const handleAddItem = e => {
@@ -88,30 +105,71 @@ const CreateInvoice = () => {
     setItems(newItems);
   };
 
-  const onDrop = picture => {
-    setLogo(picture);
-  };
-
-  // let finalData = {
-  //   logo: logo,
-  //   formData: formData,
-  //   invoice: invoice,
-  //   invoiceDate: invoiceDate,
-  //   createdDate: createdDate,
-  //   dueDate: dueDate,
-  //   dueBanalce: dueBanalce,
-  //   items: items
-  // };
-
   useEffect(() => {
-
-    let subTotalState = items.reduce( (prev, next) => {
-      return prev += parseInt(next.amount);
+    let subTotalState = items.reduce((prev, next) => {
+      return (prev += parseInt(next.amount));
     }, 0);
 
     updateSubTotal(subTotalState);
-
   }, [items]);
+
+  const handleDiscountType = e => {
+    updateDiscount({ ...discount, ...{ type: e.target.value } });
+  };
+
+  const handleDiscount = e => {
+    let value = e.target.value;
+
+    if (value.substring((0, value.length - 1)) === "%") {
+      value = value.substring(0, value.length - 1);
+    }
+
+    updateDiscount({ ...discount, ...{ discountAmount: value } });
+  };
+
+
+  // Handle Tax Part
+  const handleMultipleTaxField = e => {
+    e.preventDefault();
+    let newTaxField = { type: undefined, tax_percentage: 0 };
+    const taxFields = [...taxes, newTaxField];
+
+    updateTax(taxFields);
+  };
+
+  const handleRemoveTax = (e, i) => {
+    e.preventDefault();
+
+    const newFields = taxes.filter((item, index) => i !== index);
+
+    updateTax(newFields);
+  };
+
+  const handleTaxChange = (e, index) => {
+
+    const newTaxes = [...taxes];
+    newTaxes[index] = {
+      ...taxes[index],
+      [e.target.name]: e.target.value
+    };
+
+    updateTax(newTaxes);
+  };
+
+  useEffect(() => {
+    let totalTax = taxes.reduce((prev, next) => {
+      return (prev += parseInt(next.tax_percentage));
+    }, 0);
+    updateTotalTax(parseFloat(`.${totalTax}`));
+  }, [taxes]);
+
+  // calculating total
+  useEffect(() => {
+
+    let updatedTotalWithTax = subTotal + (subTotal * totalTax);
+    updateTotal(updatedTotalWithTax);
+
+  }, [subTotal, totalTax]);
 
 
   return (
@@ -247,6 +305,7 @@ const CreateInvoice = () => {
                       name="amount"
                       type="text"
                       onChange={e => handleItemChange(e, i)}
+                      value={item.amount > 0 ? item.amount : ""}
                     />
                   </td>
 
@@ -261,7 +320,9 @@ const CreateInvoice = () => {
               <td colSpan="3">
                 <button onClick={e => handleAddItem(e)}>+ Line Item</button>
               </td>
-              <td><div className="sub-total">Sub Total: {subTotal}</div></td>
+              <td>
+                <div className="sub-total">Sub Total: {subTotal}</div>
+              </td>
             </tr>
           </tbody>
         </TableMain>
@@ -271,28 +332,55 @@ const CreateInvoice = () => {
         <HalfWidthLeft></HalfWidthLeft>
         <HalfWidthRight>
           <div className="column-to-the-right">
-            <div className="discount-section">
+            <Discounts className="discount-section">
               <div className="title">Discount: </div>
-              <select>
+              <select onChange={e => handleDiscountType(e)}>
                 <option value="amount">Amount</option>
                 <option value="percentage">Percentage</option>
               </select>
-              <input type="text" value="40%" />
-            </div>
+              <input type="text" onChange={e => handleDiscount(e)} />
+            </Discounts>
 
             <div className="taxes">
-              <button>+ Add Tax</button>
+              <div className="taxes-list">
+                {taxes.map((tax, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <input
+                        type="text"
+                        name="type"
+                        placeholder="Tax Type"
+                        onChange={e => handleTaxChange(e, index)}
+                        value={tax.type}
+                      />
+                      <input
+                        type="number"
+                        name="tax_percentage"
+                        placeholder="Tax Percentage"
+                        onChange={e => handleTaxChange(e, index)}
+                        value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
+                      />
+                      <button onClick={e => handleRemoveTax(e, index)}>
+                        x
+                      </button>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+              <button onClick={e => handleMultipleTaxField(e)}>
+                + Add Tax
+              </button>
             </div>
 
-            <div class="total-board">
-              Total: <span>$35</span>
+            <div className="total-board">
+              Total: <span>${totoal}</span>
             </div>
           </div>
         </HalfWidthRight>
       </Row>
 
       <Row>
-        <div class="footer">
+        <div className="footer">
           <div>
             <label>Title: </label>
             <input type="text" />
