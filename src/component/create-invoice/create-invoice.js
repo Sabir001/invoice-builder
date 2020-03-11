@@ -174,12 +174,20 @@ const CreateInvoice = () => {
 
           <InputWrapper>
             <InlineInputLabel>Due Date:</InlineInputLabel>
-            <InputField type="text" />
+            <DatePicker
+              showPopperArrow={false}
+              selected={dueDate}
+              onChange={date => setDueDate(date)}
+            />
           </InputWrapper>
 
           <InputWrapper>
             <InlineInputLabel>Created At:</InlineInputLabel>
-            <InputField type="text" />
+            <DatePicker
+              showPopperArrow={false}
+              selected={invoiceDate}
+              onChange={date => setinvoiceDate(date)}
+            />
           </InputWrapper>
         </Row>
       </div>
