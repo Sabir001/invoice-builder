@@ -64,7 +64,7 @@ export const TableMain = styled.table`
     width: 100%;
 `;
 
-export const TableTH = styled.th`    
+export const TableTH = styled.th` 
     padding: 10px;
 `;
 
