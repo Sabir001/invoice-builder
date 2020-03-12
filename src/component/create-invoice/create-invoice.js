@@ -51,13 +51,14 @@ const CreateInvoice = () => {
   const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0 }]);
   const [totalTax, updateTotalTax] = useState(0);
 
-  const [footerData, updateFooterData] = useState({title: undefined, content: undefined});
+  const [footerData, updateFooterData] = useState({
+    title: undefined,
+    content: undefined
+  });
 
   const [submit, setSubmit] = useState(false);
 
   const [totoal, updateTotal] = useState(0);
-
-
 
   const handleSubmit = () => {
     localStorage.clear();
@@ -177,24 +178,24 @@ const CreateInvoice = () => {
     let totalTax = taxes.reduce((prev, next) => {
       return (prev += parseInt(next.tax_percentage));
     }, 0);
-    updateTotalTax(parseFloat(`.${totalTax}`));
+    
+    updateTotalTax(totalTax);
   }, [taxes]);
 
   // calculating total
   useEffect(() => {
-    console.log(totalTax);
-    let updatedTotalWithTax = subTotal + (subTotal * totalTax);
+    // console.log(totalTax);
+    let updatedTotalWithTax = subTotal + (subTotal / 100) * totalTax;
     updateTotal(updatedTotalWithTax);
   }, [subTotal, totalTax]);
 
-
   //Handle Footer
-  const handleFooter = (e) => {
+  const handleFooter = e => {
     updateFooterData({
       ...footerData,
       [e.target.name]: e.target.value
     });
-  }
+  };
 
   return (
     <Wrapper>
@@ -415,11 +416,15 @@ const CreateInvoice = () => {
         <div className="footer">
           <div>
             <label>Title: </label>
-            <input type="text" name="title" onChange={ (e) => handleFooter(e) } />
+            <input type="text" name="title" onChange={e => handleFooter(e)} />
           </div>
           <div>
             <label>Content: </label>
-            <textarea placeholder="footer content" name="content" onChange={ (e) => handleFooter(e) }></textarea>
+            <textarea
+              placeholder="footer content"
+              name="content"
+              onChange={e => handleFooter(e)}
+            ></textarea>
           </div>
         </div>
       </Row>
