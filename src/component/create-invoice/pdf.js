@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import styled from '@react-pdf/styled-components';
 import {
   PDFViewer,
   Document,
@@ -8,6 +9,12 @@ import {
   View,
   StyleSheet
 } from "@react-pdf/renderer";
+
+const Heading = styled.Text`
+  margin: 10px;
+  font-size: 22px;
+  font-family: 'Helvetica';
+`;
 
 const PDFDisplay = () => {
   return (
@@ -37,14 +44,22 @@ const styles = StyleSheet.create({
   section: {
     margin: 10,
     padding: 10,
-    flexGrow: 1
-  }
+    flexGrow: 1,
+
+  },
+  Heading: {
+    flexDirection: "row",
+    backgroundColor: "red"
+  },
 });
 
 // Create Document Component
 const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
+      <Heading>
+        D'oh!
+      </Heading>
       <View style={styles.section}>
         <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
         <Text>Bill To: {localStorage.getItem("billTo")}</Text>
