@@ -112,3 +112,14 @@ export const SubmitButton = styled.button`
   color: #fff;
   margin: 0 15px 0 0;
 `;
+
+
+export const Discounts = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+
+    .title, select, input {
+      margin-left: 15px;
+    }
+`;
