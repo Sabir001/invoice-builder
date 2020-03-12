@@ -140,8 +140,8 @@ const CreateInvoice = () => {
     }
 
     if (discount.type === "percentage") {
-      newSubTotal =
-        subTotal - (subTotal / 100) * parseFloat(`.${discount.discountAmount}`);
+      let discountInPercentage = subTotal * (discount.discountAmount / 100);
+      newSubTotal = subTotal - discountInPercentage;
     }
 
     updateTotal(newSubTotal);
@@ -178,7 +178,7 @@ const CreateInvoice = () => {
     let totalTax = taxes.reduce((prev, next) => {
       return (prev += parseInt(next.tax_percentage));
     }, 0);
-    
+
     updateTotalTax(totalTax);
   }, [taxes]);
 
