@@ -45,6 +45,8 @@ const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
+      {/* <Text> <img src={ localStorage.getItem('logo') } width="200" /> </Text> */}
+        {console.log("logo", localStorage.getItem('logo'))}
         <Text>Bill From: { localStorage.getItem('billFrom') }</Text>
         <Text>Bill To: { localStorage.getItem('billTo') }</Text>
       </View>

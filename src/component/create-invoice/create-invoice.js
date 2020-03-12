@@ -11,7 +11,6 @@ import {
   HalfWidthRight,
   InputField,
   InputWrapper,
-  InvoiceTitle,
   InlineInputLabel,
   InlineInputField,
   TableMain,
@@ -60,7 +59,30 @@ const CreateInvoice = () => {
 
   const [totoal, updateTotal] = useState(0);
 
+  function base64toBlob(base64Data, contentType) {
+    contentType = contentType || '';
+    var sliceSize = 1024;
+    var byteCharacters = atob(base64Data);
+    var bytesLength = byteCharacters.length;
+    var slicesCount = Math.ceil(bytesLength / sliceSize);
+    var byteArrays = new Array(slicesCount);
+
+    for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+        var begin = sliceIndex * sliceSize;
+        var end = Math.min(begin + sliceSize, bytesLength);
+
+        var bytes = new Array(end - begin);
+        for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+            bytes[i] = byteCharacters[offset].charCodeAt(0);
+        }
+        byteArrays[sliceIndex] = new Uint8Array(bytes);
+    }
+    return new Blob(byteArrays, { type: contentType });
+}
+
   const handleSubmit = () => {
+    // console.log( base64toBlob(logo, "jpg/png") );
+
     localStorage.clear();
     localStorage.setItem("billFrom", billFrom);
     localStorage.setItem("billTo", billTo);
@@ -70,12 +92,19 @@ const CreateInvoice = () => {
     localStorage.setItem("terms", terms);
     localStorage.setItem("dueBanalce", dueBanalce);
     localStorage.setItem("items", items);
+    localStorage.setItem("logo", logo);
 
     setSubmit(true);
   };
 
-  const onDrop = picture => {
-    setLogo(picture);
+  const onDrop = logo => {
+    let file = logo[0];
+    console.log("Logo onDrop: ", file);
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {  
+      setLogo( reader.result );
+    };
   };
 
   const handleRemoveItem = (e, i) => {
@@ -178,7 +207,7 @@ const CreateInvoice = () => {
     let totalTax = taxes.reduce((prev, next) => {
       return (prev += parseInt(next.tax_percentage));
     }, 0);
-    
+
     updateTotalTax(totalTax);
   }, [taxes]);
 
@@ -206,9 +235,9 @@ const CreateInvoice = () => {
               withIcon={false}
               withPreview={true}
               singleImage={true}
-              onChange={picture => onDrop(picture)}
+              onChange={onDrop}
               imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-              maxFileSize={2048}
+              maxFileSize={5242880}
             />
           </HalfWidthLeft>
 
