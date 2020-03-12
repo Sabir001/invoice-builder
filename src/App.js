@@ -1,52 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import styled from 'styled-components';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-
-const Title = styled.h1`
-  color: #fff;
-  text-align: center;
-  padding: 10px 50px;
-  background-color: red;
-`;
-
-function App() {
-  return (
-    <>
-    <Router>
-      <Title>Invoice Generator</Title>
-      <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-          </ul>
-        </nav>
-        <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/users">
-            <Users />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-    </Router>
-    </>
-=======
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./component/home/homepage";
@@ -77,7 +28,6 @@ function App() {
         </Container>
       </Router>
     </div>
->>>>>>> origin
   );
 }
 
