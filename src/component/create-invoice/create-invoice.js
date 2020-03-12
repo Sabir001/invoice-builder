@@ -35,8 +35,8 @@ const CreateInvoice = () => {
   const [items, setItems] = useState([
     {
       name: "",
-      quantity: "",
-      rate: "",
+      quantity: 0,
+      rate: 0,
       amount: 0
     }
   ]);
@@ -91,8 +91,8 @@ const CreateInvoice = () => {
 
     const newItem = {
       name: "",
-      quantity: "",
-      rate: "",
+      quantity: 0,
+      rate: 0,
       amount: 0
     };
 
@@ -101,10 +101,24 @@ const CreateInvoice = () => {
 
   const handleItemChange = (e, index) => {
     const newItems = [...items];
-    newItems[index] = {
-      ...items[index],
-      [e.target.name]: e.target.value
-    };
+
+    switch(e.target.name) {
+      case 'rate':
+        newItems[index].rate = e.target.value;
+        break;
+
+      case 'quantity':
+        newItems[index].quantity = e.target.value;
+        break;
+
+      case 'name':
+        newItems[index].name = e.target.value;
+        break;
+    }
+
+    if(e.target.name == 'rate' || e.target.name == 'quantity') {
+      newItems[index].amount = parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
+    }
 
     setItems(newItems);
   };
@@ -117,6 +131,7 @@ const CreateInvoice = () => {
     updateSubTotal(subTotalState);
   }, [items]);
 
+  // Handle Discount
   const handleDiscountType = e => {
     updateDiscount({ ...discount, ...{ type: e.target.value } });
   };
@@ -131,7 +146,6 @@ const CreateInvoice = () => {
     updateDiscount({ ...discount, ...{ discountAmount: value } });
   };
 
-  // Handle discount part
   useEffect(() => {
     let newSubTotal;
 
@@ -184,7 +198,6 @@ const CreateInvoice = () => {
 
   // calculating total
   useEffect(() => {
-    // console.log(totalTax);
     let updatedTotalWithTax = subTotal + (subTotal / 100) * totalTax;
     updateTotal(updatedTotalWithTax);
   }, [subTotal, totalTax]);
@@ -310,28 +323,21 @@ const CreateInvoice = () => {
                     {" "}
                     <input
                       name="quantity"
-                      type="text"
+                      type="number"
                       onChange={e => handleItemChange(e, i)}
                     />
                   </td>
 
                   <td>
-                    {" "}
                     <input
                       name="rate"
-                      type="text"
+                      type="number"
                       onChange={e => handleItemChange(e, i)}
                     />
                   </td>
 
                   <td>
-                    {" "}
-                    <input
-                      name="amount"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                      value={item.amount > 0 ? item.amount : 0}
-                    />
+                    <span>{item.amount}</span>
                   </td>
 
                   <td>
