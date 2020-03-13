@@ -3,14 +3,14 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import CreateInvoice from "./component/create-invoice/create-invoice";
 import PDFDisplay from "./component/create-invoice/pdf";
 import Header from "./component/header/header";
-import { Container } from "./style/common";
+import { Container } from "./style/create-style";
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Header />
-        <Container>
+        {/* <Header /> */}
+        {/* <Container> */}
           <Switch>
             <Route exact path="/">
               <CreateInvoice />
@@ -20,7 +20,7 @@ function App() {
               <PDFDisplay />
             </Route>
           </Switch>
-        </Container>
+        {/* </Container> */}
       </Router>
     </div>
   );

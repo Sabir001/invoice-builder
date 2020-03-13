@@ -37,11 +37,11 @@ const styles = StyleSheet.create({
   section: {
     margin: 10,
     padding: 10,
-    flexGrow: 1
+    flexGrow: 1,
   },
   image: {
-    width: "60%",
-    padding: 10,
+    width: "60px",
+    padding: 0,
     backgroundColor: "grey"
   }
 });
@@ -51,8 +51,7 @@ const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-        {/* <Text> <Image src={ localStorage.getItem('logo')} /> </Text> */}
-        {console.log("logo", localStorage.getItem("logo"))}
+        <Image style={styles.image} debug={true} src={localStorage.getItem("logo")} />
         <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
         <Text>Bill To: {localStorage.getItem("billTo")}</Text>
       </View>
@@ -62,10 +61,6 @@ const MyDocument = () => (
         <Text>Due Date: {localStorage.getItem("dueDate")}</Text>
         <Text>Invoice Terms: {localStorage.getItem("terms")}</Text>
         <Text>Due Balance: {localStorage.getItem("dueBanalce")}</Text>
-      </View>
-
-      <View style={styles.image}>
-        <Image debug={true} src={localStorage.getItem("logo")} />
       </View>
     </Page>
   </Document>

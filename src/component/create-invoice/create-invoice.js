@@ -4,13 +4,18 @@ import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Wrapper, Row } from "../../style/common";
-
 import {
+  Wrapper,
+  Row,
+  HeaderFull,
+  Container,
   HalfWidthLeft,
   HalfWidthRight,
+  MainBody,
   InputField,
   InputWrapper,
+  InputLabel,
+  TextareaField,
   InlineInputLabel,
   InlineInputField,
   TableMain,
@@ -18,6 +23,7 @@ import {
   SubmitRow,
   SubmitButton
 } from "../../style/create-style";
+import styled from "styled-components";
 
 const CreateInvoice = () => {
   const [logo, setLogo] = useState();
@@ -102,14 +108,14 @@ const CreateInvoice = () => {
     console.log("Logo Object", logo);
     let file = logo[0];
 
-    const objectURL = window.URL.createObjectURL(file);
-    setLogo(objectURL);
+    // const objectURL = window.URL.createObjectURL(file);
+    // setLogo(objectURL);
 
-    // let reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onloadend = () => {
-    //   setLogo( reader.result );
-    // };
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setLogo(reader.result);
+    };
   };
 
   const handleRemoveItem = (e, i) => {
@@ -232,252 +238,261 @@ const CreateInvoice = () => {
 
   return (
     <Wrapper>
-      <div className="header">
-        <Row>
-          <HalfWidthLeft>
-            <img src={logo} />
-            <p>-------</p>
-            <ImageUploader
-              withIcon={false}
-              withPreview={true}
-              singleImage={true}
-              onChange={onDrop}
-              imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-              maxFileSize={5242880}
-            />
-          </HalfWidthLeft>
+      <HeaderFull>
+        <Container>
+          <Row>
+            <HalfWidthLeft>
+              <ImageUploader
+                withIcon={false}
+                withPreview={true}
+                singleImage={true}
+                buttonText={""}
+                withLabel={true}
+                label={"Drop Your Logo"}
+                onChange={onDrop}
+                imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                maxFileSize={5242880}
+              />
+            </HalfWidthLeft>
 
-          <HalfWidthRight>
+            <HalfWidthRight>
+              <InputWrapper className={"invoice"}>
+                <InputLabel>Invoice No</InputLabel>
+                <InputField
+                  type="number"
+                  name="invoice-id"
+                  placeholder="Add Invoice No"
+                  value={invoice}
+                  onChange={e => setinvoice(e.target.value)}
+                />
+              </InputWrapper>
+            </HalfWidthRight>
+          </Row>
+        </Container>
+      </HeaderFull>
+
+      <MainBody>
+        <Container>
+          <Row>
+            <HalfWidthLeft>
+              <InputWrapper>
+                <InputLabel>From</InputLabel>
+                <TextareaField
+                  name="bill_to"
+                  onChange={e => setBillFrom(e.target.value)}
+                  placeholder="Name: X Company"
+                  value={billFrom}
+                ></TextareaField>
+              </InputWrapper>
+            </HalfWidthLeft>
+
+            <HalfWidthRight>
+              <InputWrapper>
+                <InputLabel>To</InputLabel>
+                <TextareaField
+                  name="bill_from"
+                  onChange={e => setBillTo(e.target.value)}
+                  placeholder="Name: Y Company"
+                  value={billTo}
+                ></TextareaField>
+              </InputWrapper>
+            </HalfWidthRight>
+          </Row>
+
+          <Row>
             <InputWrapper>
-              <InlineInputLabel>Invoice No:</InlineInputLabel>
-              <InlineInputField
-                type="number"
-                name="invoice-id"
-                placeholder="Invoice Id"
-                value={invoice}
-                onChange={e => setinvoice(e.target.value)}
+              <InputLabel>Voucher No:</InputLabel>
+              <InputField type="text" />
+            </InputWrapper>
+
+            <InputWrapper>
+              <InputLabel>Transaction Date:</InputLabel>
+              <InputField type="text" />
+            </InputWrapper>
+
+            <InputWrapper>
+              <InputLabel>Due Date:</InputLabel>
+              <DatePicker
+                showPopperArrow={false}
+                selected={dueDate}
+                onChange={date => setDueDate(date)}
               />
             </InputWrapper>
-          </HalfWidthRight>
-        </Row>
-      </div>
 
-      <div className="body">
-        <Row>
-          <HalfWidthLeft>
             <InputWrapper>
-              <InlineInputLabel>Bill From:</InlineInputLabel>
-              <InputField
-                type="text"
-                name="bill_to"
-                onChange={e => setBillFrom(e.target.value)}
-                placeholder="Who is this Invoice from?"
-                value={billFrom}
+              <InputLabel>Created At:</InputLabel>
+              <DatePicker
+                showPopperArrow={false}
+                selected={invoiceDate}
+                onChange={date => setinvoiceDate(date)}
               />
             </InputWrapper>
-          </HalfWidthLeft>
+          </Row>
 
-          <HalfWidthRight>
-            <InputWrapper>
-              <InlineInputLabel>Bill To:</InlineInputLabel>
-              <InputField
-                type="text"
-                name="bill_from"
-                onChange={e => setBillTo(e.target.value)}
-                placeholder="Who is this Invoice to?"
-                value={billTo}
-              />
-            </InputWrapper>
-          </HalfWidthRight>
-        </Row>
-      </div>
-
-      <div className="info-and-numbers">
-        <Row>
-          <InputWrapper>
-            <InlineInputLabel>Voucher No:</InlineInputLabel>
-            <InputField type="text" />
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel>Transaction Date:</InlineInputLabel>
-            <InputField type="text" />
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel>Due Date:</InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={dueDate}
-              onChange={date => setDueDate(date)}
-            />
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel>Created At:</InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={invoiceDate}
-              onChange={date => setinvoiceDate(date)}
-            />
-          </InputWrapper>
-        </Row>
-      </div>
-
-      <Row>
-        <TableMain>
-          <thead>
-            <tr>
-              <th>Item Name</th>
-              <th>Quantity</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {items.map((item, i) => {
-              return (
-                <tr key={i}>
-                  <td>
-                    {" "}
-                    <input
-                      name="name"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
-
-                  <td>
-                    {" "}
-                    <input
-                      name="quantity"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
-
-                  <td>
-                    {" "}
-                    <input
-                      name="rate"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
-
-                  <td>
-                    {" "}
-                    <input
-                      name="amount"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                      value={item.amount > 0 ? item.amount : 0}
-                    />
-                  </td>
-
-                  <td>
-                    <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                  </td>
+          <Row>
+            <TableMain>
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Quantity</th>
+                  <th>Rate</th>
+                  <th>Amount</th>
+                  <th></th>
                 </tr>
-              );
-            })}
+              </thead>
 
-            <tr>
-              <td colSpan="3">
-                <button onClick={e => handleAddItem(e)}>+ Line Item</button>
-              </td>
-              <td>
-                <div className="sub-total">Sub Total: {subTotal}</div>
-              </td>
-            </tr>
-          </tbody>
-        </TableMain>
-      </Row>
-
-      <Row>
-        <HalfWidthLeft></HalfWidthLeft>
-        <HalfWidthRight>
-          <div className="column-to-the-right">
-            <Discounts className="discount-section">
-              <div className="title">Discount: </div>
-              <select onChange={e => handleDiscountType(e)}>
-                <option value="amount">Amount</option>
-                <option value="percentage">Percentage</option>
-              </select>
-              <input type="text" onChange={e => handleDiscount(e)} />
-            </Discounts>
-
-            <div className="taxes">
-              <div className="taxes-list">
-                {taxes.map((tax, index) => {
+              <tbody>
+                {items.map((item, i) => {
                   return (
-                    <React.Fragment key={index}>
-                      <input
-                        type="text"
-                        name="type"
-                        placeholder="Tax Type"
-                        onChange={e => handleTaxChange(e, index)}
-                        value={tax.type}
-                      />
-                      <input
-                        type="number"
-                        name="tax_percentage"
-                        placeholder="Tax Percentage"
-                        onChange={e => handleTaxChange(e, index)}
-                        value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
-                      />
-                      <button onClick={e => handleRemoveTax(e, index)}>
-                        x
-                      </button>
-                    </React.Fragment>
+                    <tr key={i}>
+                      <td>
+                        {" "}
+                        <InputField
+                          name="name"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                        />
+                      </td>
+
+                      <td>
+                        {" "}
+                        <InputField
+                          name="quantity"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                        />
+                      </td>
+
+                      <td>
+                        {" "}
+                        <InputField
+                          name="rate"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                        />
+                      </td>
+
+                      <td>
+                        {" "}
+                        <InputField
+                          name="amount"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                          value={item.amount > 0 ? item.amount : 0}
+                        />
+                      </td>
+
+                      <td>
+                        <button onClick={e => handleRemoveItem(e, i)}>X</button>
+                      </td>
+                    </tr>
                   );
                 })}
+
+                <tr>
+                  <td className={"add_items"} colSpan="3">
+                    <button onClick={e => handleAddItem(e)}>+ Line Item</button>
+                  </td>
+                  <td className={"subtotal_label"}>
+                    <div>Sub Total</div>
+                  </td>
+                  <td className={"subtotal_amount"}>
+                    <div>{subTotal}</div>
+                  </td>
+                </tr>
+              </tbody>
+            </TableMain>
+          </Row>
+
+          <Row>
+            <HalfWidthLeft></HalfWidthLeft>
+            <HalfWidthRight>
+              <div className="column-to-the-right">
+                <Discounts className="discount-section">
+                <InputLabel>Discount</InputLabel>
+                  <select onChange={e => handleDiscountType(e)}>
+                    <option value="amount">Amount</option>
+                    <option value="percentage">Percentage</option>
+                  </select>
+                  <InputField type="text" onChange={e => handleDiscount(e)} />
+                </Discounts>
+
+                <div className="taxes">
+                  <div className="taxes-list">
+                    {taxes.map((tax, index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          <InputField
+                            type="text"
+                            name="type"
+                            placeholder="Tax Type"
+                            onChange={e => handleTaxChange(e, index)}
+                            value={tax.type}
+                          />
+                          <InputField
+                            type="number"
+                            name="tax_percentage"
+                            placeholder="Tax Percentage"
+                            onChange={e => handleTaxChange(e, index)}
+                            value={
+                              tax.tax_percentage > 0 ? tax.tax_percentage : ""
+                            }
+                          />
+                          <button onClick={e => handleRemoveTax(e, index)}>
+                            x
+                          </button>
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                  <button onClick={e => handleMultipleTaxField(e)}>
+                    + Add Tax
+                  </button>
+                </div>
+
+                <div className="total-board">
+                  Total: <span>${totoal}</span>
+                </div>
               </div>
-              <button onClick={e => handleMultipleTaxField(e)}>
-                + Add Tax
-              </button>
+            </HalfWidthRight>
+          </Row>
+
+          <Row>
+            <div className="footer">
+              <div>
+                <label>Title: </label>
+                <input
+                  type="text"
+                  name="title"
+                  onChange={e => handleFooter(e)}
+                />
+              </div>
+              <div>
+                <label>Content: </label>
+                <textarea
+                  placeholder="footer content"
+                  name="content"
+                  onChange={e => handleFooter(e)}
+                ></textarea>
+              </div>
             </div>
-
-            <div className="total-board">
-              Total: <span>${totoal}</span>
-            </div>
-          </div>
-        </HalfWidthRight>
-      </Row>
-
-      <Row>
-        <div className="footer">
-          <div>
-            <label>Title: </label>
-            <input type="text" name="title" onChange={e => handleFooter(e)} />
-          </div>
-          <div>
-            <label>Content: </label>
-            <textarea
-              placeholder="footer content"
-              name="content"
-              onChange={e => handleFooter(e)}
-            ></textarea>
-          </div>
-        </div>
-      </Row>
-
-      <SubmitRow>
-        <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
-        {submit && (
-          <Link
-            className={"show_pdf"}
-            target="_blank"
-            to={{
-              pathname: "/pdf"
-            }}
-          >
-            <span>Show PDF</span>
-          </Link>
-        )}
-      </SubmitRow>
+          </Row>
+          <SubmitRow>
+            <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
+            {submit && (
+              <Link
+                className={"show_pdf"}
+                target="_blank"
+                to={{
+                  pathname: "/pdf"
+                }}
+              >
+                <span>Show PDF</span>
+              </Link>
+            )}
+          </SubmitRow>
+        </Container>
+      </MainBody>
     </Wrapper>
   );
 };
