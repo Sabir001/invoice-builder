@@ -19,7 +19,7 @@ const PDFDisplay = () => {
         height: "100%"
       }}
     >
-      {console.log("props", localStorage.getItem("billFrom"))}
+      {console.log("props", localStorage.getItem("items"))}
       <MyDocument />
     </PDFViewer>
   );
