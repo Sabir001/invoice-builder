@@ -28,12 +28,6 @@ function Header() {
           </HeaderList>
 
           <HeaderList>
-            <Link to="/create">
-              <span>Create</span>
-            </Link>
-          </HeaderList>
-
-          <HeaderList>
             <Link to="/template">
               <span>Templates</span>
             </Link>
