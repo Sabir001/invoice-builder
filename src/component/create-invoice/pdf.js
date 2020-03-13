@@ -5,7 +5,8 @@ import {
   Page,
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  Image
 } from "@react-pdf/renderer";
 
 const PDFDisplay = () => {
@@ -37,7 +38,12 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
     flexGrow: 1
-  }
+  },
+  image: {
+    width: '60%',
+    padding: 10,
+    backgroundColor: 'grey',
+  },
 });
 
 // Create Document Component
@@ -45,7 +51,7 @@ const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-      {/* <Text> <img src={ localStorage.getItem('logo') } width="200" /> </Text> */}
+      {/* <Text> <Image src={ localStorage.getItem('logo')} /> </Text> */}
         {console.log("logo", localStorage.getItem('logo'))}
         <Text>Bill From: { localStorage.getItem('billFrom') }</Text>
         <Text>Bill To: { localStorage.getItem('billTo') }</Text>
@@ -56,6 +62,10 @@ const MyDocument = () => (
       <Text>Due Date: { localStorage.getItem('dueDate') }</Text>
       <Text>Invoice Terms: { localStorage.getItem('terms') }</Text>
       <Text>Due Balance: { localStorage.getItem('dueBanalce') }</Text>
+      </View>
+      
+      <View style={styles.image}>
+        <Image debug={true} src={ localStorage.getItem('logo')} />
       </View>
     </Page>
   </Document>

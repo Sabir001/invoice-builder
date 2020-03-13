@@ -5,6 +5,7 @@ const HomePage = () => {
   return (
     <Wrapper>
       Homepage
+      <img src={ localStorage.getItem('logo') } />
     </Wrapper>
   );
 };

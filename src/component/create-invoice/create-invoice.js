@@ -81,6 +81,7 @@ const CreateInvoice = () => {
 }
 
   const handleSubmit = () => {
+    console.log("Base64: ", logo);
     // console.log( base64toBlob(logo, "jpg/png") );
 
     localStorage.clear();
@@ -98,13 +99,18 @@ const CreateInvoice = () => {
   };
 
   const onDrop = logo => {
+    console.log("Logo Object", logo);
     let file = logo[0];
-    console.log("Logo onDrop: ", file);
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {  
-      setLogo( reader.result );
-    };
+
+    const objectURL = window.URL.createObjectURL(file);
+    setLogo( objectURL );
+
+    // let reader = new FileReader();
+    // reader.readAsDataURL(file);
+    // reader.onloadend = () => {  
+    //   setLogo( reader.result );
+    // };
+    
   };
 
   const handleRemoveItem = (e, i) => {
@@ -213,7 +219,6 @@ const CreateInvoice = () => {
 
   // calculating total
   useEffect(() => {
-    // console.log(totalTax);
     let updatedTotalWithTax = subTotal + (subTotal / 100) * totalTax;
     updateTotal(updatedTotalWithTax);
   }, [subTotal, totalTax]);
@@ -231,6 +236,8 @@ const CreateInvoice = () => {
       <div className="header">
         <Row>
           <HalfWidthLeft>
+            <img src={logo} />
+            <p>-------</p>
             <ImageUploader
               withIcon={false}
               withPreview={true}
