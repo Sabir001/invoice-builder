@@ -40,10 +40,10 @@ const styles = StyleSheet.create({
     flexGrow: 1
   },
   image: {
-    width: '60%',
+    width: "60%",
     padding: 10,
-    backgroundColor: 'grey',
-  },
+    backgroundColor: "grey"
+  }
 });
 
 // Create Document Component
@@ -51,21 +51,21 @@ const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-      {/* <Text> <Image src={ localStorage.getItem('logo')} /> </Text> */}
-        {console.log("logo", localStorage.getItem('logo'))}
-        <Text>Bill From: { localStorage.getItem('billFrom') }</Text>
-        <Text>Bill To: { localStorage.getItem('billTo') }</Text>
+        {/* <Text> <Image src={ localStorage.getItem('logo')} /> </Text> */}
+        {console.log("logo", localStorage.getItem("logo"))}
+        <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
+        <Text>Bill To: {localStorage.getItem("billTo")}</Text>
       </View>
       <View style={styles.section}>
-      <Text>Invoice No: { localStorage.getItem('invoice_no') }</Text>
-      <Text>Invoice Date: { localStorage.getItem('invoiceDate') }</Text>
-      <Text>Due Date: { localStorage.getItem('dueDate') }</Text>
-      <Text>Invoice Terms: { localStorage.getItem('terms') }</Text>
-      <Text>Due Balance: { localStorage.getItem('dueBanalce') }</Text>
+        <Text>Invoice No: {localStorage.getItem("invoice_no")}</Text>
+        <Text>Invoice Date: {localStorage.getItem("invoiceDate")}</Text>
+        <Text>Due Date: {localStorage.getItem("dueDate")}</Text>
+        <Text>Invoice Terms: {localStorage.getItem("terms")}</Text>
+        <Text>Due Balance: {localStorage.getItem("dueBanalce")}</Text>
       </View>
-      
+
       <View style={styles.image}>
-        <Image debug={true} src={ localStorage.getItem('logo')} />
+        <Image debug={true} src={localStorage.getItem("logo")} />
       </View>
     </Page>
   </Document>
