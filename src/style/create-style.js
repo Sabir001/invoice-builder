@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Container = styled.div`
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
 `;
 
@@ -17,18 +17,56 @@ export const Row = styled.div`
   display: flex;
   justify-content: flex-start;
   width: 100%;
-  padding: 0 15px;
+  box-sizing: border-box;
 `;
 
-export const HeaderFull = styled.div`
+export const InnerRow = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+`;
+
+export const ContentLeft = styled.div`
+  flex: 0 0 75%;
+  padding: 1em;
+  box-sizing: border-box;
+`;
+
+export const ContentRight = styled.div`
+  flex: 0 0 25%;
+  padding: 2em;
+  box-sizing: border-box;
+`;
+
+export const FormLeft = styled.div`
+  flex: 1 1 auto;
+  padding: 1em;
+`;
+
+export const FormRight = styled.div`
+  flex: 1 1 auto;
+  padding: 1em;
+`;
+
+export const MainHeader = styled.div`
   background-color: #22285c;
   padding: 50px 0 0;
 
   > div {
     background-color: #485195;
-    padding: 1.5em;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+  }
+
+  .row {
+    padding: 0;
+
+    > div {
+      padding-top: 2em;
+      padding-bottom: 2em;
+    }
   }
 
   .invoice {
@@ -38,6 +76,11 @@ export const HeaderFull = styled.div`
     input {
       width: 100%;
     }
+  }
+
+  .header_buttons {
+    background-color: #3c447f;
+    border-top-right-radius: 10px;
   }
 
   .fileUploader {
@@ -100,7 +143,7 @@ export const HeaderFull = styled.div`
     background-color: #6d76bf;
     border-radius: 5px;
     border: 0;
-    padding: 10px 20px;
+    padding: 15px 20px;
 
     &::-webkit-input-placeholder {
       color: #fff;
@@ -117,15 +160,59 @@ export const HeaderFull = styled.div`
   }
 `;
 
-export const MainBody = styled.div`
+export const ActionButtons = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 
+  > button {
+    width: auto;
+    margin-right: 2%;
+    border: 1px solid #9da5ea;
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 5px;
+    color: #9da5ea;
+  }
+
+  > button:last-child {
+    margin-right: 0;
+  }
+`;
+
+export const SendButton = styled.button`
+  width: 100%;
+  background-color: #00d8c1;
+  border: 0;
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 1em;
+  color: #fff;
+  font-size: 0.9em;
+  font-weight: 700;
+`;
+
+export const MainBody = styled.div`
   > div {
-    background-color: #FFF;
-    padding: 1.5em;
+    background-color: #fff;
+  }
+
+  .bodySideControls {
+    background-color: #eff2fa;
+
+    select {
+      background-color: #fff;
+      width: 100%;
+    }
+  }
+
+  .infoform {
+    input {
+      width: 90%
+    }
   }
 
   .react-datepicker-wrapper input {
-    width: auto;
     box-sizing: border-box;
     background-color: #eff2fa;
     border: 0;
@@ -143,17 +230,6 @@ export const MainBody = styled.div`
     padding: 12px 20px;
     color: #333;
   }
-
-`;
-
-export const HalfWidthLeft = styled.div`
-  flex: 1;
-  padding: 1em;
-`;
-
-export const HalfWidthRight = styled.div`
-  flex: 1;
-  padding: 1em;
 `;
 
 export const TextareaField = styled.textarea`
@@ -167,18 +243,18 @@ export const TextareaField = styled.textarea`
   color: #333;
   resize: none;
 
-    &::-webkit-input-placeholder {
-      color: #999;
-    }
-    &::-moz-placeholder {
-      color: #999;
-    }
-    &:-ms-input-placeholder {
-      color: #999;
-    }
-    &:-moz-placeholder {
-      color: #999;
-    }
+  &::-webkit-input-placeholder {
+    color: #999;
+  }
+  &::-moz-placeholder {
+    color: #999;
+  }
+  &:-ms-input-placeholder {
+    color: #999;
+  }
+  &:-moz-placeholder {
+    color: #999;
+  }
 `;
 
 export const InputField = styled.input`
@@ -190,18 +266,18 @@ export const InputField = styled.input`
   padding: 12px 20px;
   color: #333;
 
-    &::-webkit-input-placeholder {
-      color: #999;
-    }
-    &::-moz-placeholder {
-      color: #999;
-    }
-    &:-ms-input-placeholder {
-      color: #999;
-    }
-    &:-moz-placeholder {
-      color: #999;
-    }
+  &::-webkit-input-placeholder {
+    color: #999;
+  }
+  &::-moz-placeholder {
+    color: #999;
+  }
+  &:-ms-input-placeholder {
+    color: #999;
+  }
+  &:-moz-placeholder {
+    color: #999;
+  }
 `;
 
 export const InputWrapper = styled.div`
@@ -249,20 +325,19 @@ export const TableMain = styled.table`
   }
 
   tbody {
-    tr td:first-child { 
-      border-top-left-radius: 5px; 
-    }
-    tr td:last-child { 
-      border-top-right-radius: 5px; 
-    }
-    tr td:first-child { 
-      border-bottom-left-radius: 5px; 
+    tr td:first-child {
+      border-top-left-radius: 5px;
     }
     tr td:last-child {
-      border-bottom-right-radius: 5px; 
+      border-top-right-radius: 5px;
+    }
+    tr td:first-child {
+      border-bottom-left-radius: 5px;
+    }
+    tr td:last-child {
+      border-bottom-right-radius: 5px;
     }
     tr {
-
       td {
         background-color: #eff2fa;
         padding: 5px;
@@ -275,15 +350,15 @@ export const TableMain = styled.table`
       }
     }
 
-    .add_items {      
+    .add_items {
       background-color: transparent;
     }
 
     .subtotal_label {
-      border-top-left-radius: 5px; 
-      border-bottom-left-radius: 5px; 
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
       padding: 5px 15px;
-  }
+    }
   }
 `;
 
