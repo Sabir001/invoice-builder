@@ -1,35 +1,28 @@
 import React from "react";
-import moment from "moment";
-import styled from '@react-pdf/styled-components';
 import {
   PDFViewer,
   Document,
   Page,
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  Image
 } from "@react-pdf/renderer";
-
-const Heading = styled.Text`
-  margin: 10px;
-  font-size: 22px;
-  font-family: 'Helvetica';
-`;
 
 const PDFDisplay = () => {
   return (
-    <PDFViewer
-      style={{
-        position: "absolute",
-        left: "0",
-        top: "0",
-        width: "100%",
-        height: "100%"
-      }}
-    >
-      {console.log("props", localStorage.getItem("billFrom"))}
-      <MyDocument />
-    </PDFViewer>
+      <PDFViewer
+          style={{
+            position: "absolute",
+            left: "0",
+            top: "0",
+            width: "100%",
+            height: "100%"
+          }}
+      >
+        {console.log("props", localStorage.getItem("items"))}
+        <MyDocument />
+      </PDFViewer>
   );
 };
 
@@ -44,39 +37,36 @@ const styles = StyleSheet.create({
   section: {
     margin: 10,
     padding: 10,
-    flexGrow: 1,
-
+    flexGrow: 1
   },
-  Heading: {
-    flexDirection: "row",
-    backgroundColor: "red"
-  },
+  image: {
+    width: "60%",
+    padding: 10,
+    backgroundColor: "grey"
+  }
 });
 
 // Create Document Component
 const MyDocument = () => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Heading>
-        D'oh!
-      </Heading>
-      <View style={styles.section}>
-        <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
-        <Text>Bill To: {localStorage.getItem("billTo")}</Text>
-      </View>
-      <View style={styles.section}>
-        <Text>Invoice No: {localStorage.getItem("invoice_no")}</Text>
-        <Text>
-          Invoice Date:{" "}
-          {moment(localStorage.getItem("invoiceDate")).format("DD-MM-YYYY")}
-        </Text>
-        <Text>
-          Due Date:{" "}
-          {moment(localStorage.getItem("dueDate")).format("DD-MM-YYYY")}
-        </Text>
-        <Text>Invoice Terms: {localStorage.getItem("terms")}</Text>
-        <Text>Due Balance: {localStorage.getItem("dueBanalce")}</Text>
-      </View>
-    </Page>
-  </Document>
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.section}>
+          {/* <Text> <Image src={ localStorage.getItem('logo')} /> </Text> */}
+          {console.log("logo", localStorage.getItem("logo"))}
+          <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
+          <Text>Bill To: {localStorage.getItem("billTo")}</Text>
+        </View>
+        <View style={styles.section}>
+          <Text>Invoice No: {localStorage.getItem("invoice_no")}</Text>
+          <Text>Invoice Date: {localStorage.getItem("invoiceDate")}</Text>
+          <Text>Due Date: {localStorage.getItem("dueDate")}</Text>
+          <Text>Invoice Terms: {localStorage.getItem("terms")}</Text>
+          <Text>Due Balance: {localStorage.getItem("dueBanalce")}</Text>
+        </View>
+
+        <View style={styles.image}>
+          <Image debug={true} src={localStorage.getItem("logo")} />
+        </View>
+      </Page>
+    </Document>
 );

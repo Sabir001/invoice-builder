@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import HomePage from "./component/home/homepage";
 import CreateInvoice from "./component/create-invoice/create-invoice";
 import PDFDisplay from "./component/create-invoice/pdf";
 import Header from "./component/header/header";
@@ -14,10 +13,6 @@ function App() {
         <Container>
           <Switch>
             <Route exact path="/">
-              <HomePage />
-            </Route>
-
-            <Route path="/create">
               <CreateInvoice />
             </Route>
 

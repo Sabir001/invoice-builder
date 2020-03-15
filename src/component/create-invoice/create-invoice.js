@@ -11,7 +11,6 @@ import {
   HalfWidthRight,
   InputField,
   InputWrapper,
-  InvoiceTitle,
   InlineInputLabel,
   InlineInputField,
   TableMain,
@@ -51,15 +50,40 @@ const CreateInvoice = () => {
   const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0 }]);
   const [totalTax, updateTotalTax] = useState(0);
 
-  const [footerData, updateFooterData] = useState({title: undefined, content: undefined});
+  const [footerData, updateFooterData] = useState({
+    title: undefined,
+    content: undefined
+  });
 
   const [submit, setSubmit] = useState(false);
 
   const [totoal, updateTotal] = useState(0);
 
+  function base64toBlob(base64Data, contentType) {
+    contentType = contentType || "";
+    var sliceSize = 1024;
+    var byteCharacters = atob(base64Data);
+    var bytesLength = byteCharacters.length;
+    var slicesCount = Math.ceil(bytesLength / sliceSize);
+    var byteArrays = new Array(slicesCount);
 
+    for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+      var begin = sliceIndex * sliceSize;
+      var end = Math.min(begin + sliceSize, bytesLength);
+
+      var bytes = new Array(end - begin);
+      for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+        bytes[i] = byteCharacters[offset].charCodeAt(0);
+      }
+      byteArrays[sliceIndex] = new Uint8Array(bytes);
+    }
+    return new Blob(byteArrays, { type: contentType });
+  }
 
   const handleSubmit = () => {
+    console.log("Base64: ", logo);
+    // console.log( base64toBlob(logo, "jpg/png") );
+
     localStorage.clear();
     localStorage.setItem("billFrom", billFrom);
     localStorage.setItem("billTo", billTo);
@@ -69,12 +93,23 @@ const CreateInvoice = () => {
     localStorage.setItem("terms", terms);
     localStorage.setItem("dueBanalce", dueBanalce);
     localStorage.setItem("items", items);
+    localStorage.setItem("logo", logo);
 
     setSubmit(true);
   };
 
-  const onDrop = picture => {
-    setLogo(picture);
+  const onDrop = logo => {
+    console.log("Logo Object", logo);
+    let file = logo[0];
+
+    const objectURL = window.URL.createObjectURL(file);
+    setLogo(objectURL);
+
+    // let reader = new FileReader();
+    // reader.readAsDataURL(file);
+    // reader.onloadend = () => {
+    //   setLogo( reader.result );
+    // };
   };
 
   const handleRemoveItem = (e, i) => {
@@ -140,7 +175,7 @@ const CreateInvoice = () => {
 
     if (discount.type === "percentage") {
       newSubTotal =
-        subTotal - (subTotal / 100) * parseFloat(`.${discount.discountAmount}`);
+          subTotal - (subTotal / 100) * parseFloat(`.${discount.discountAmount}`);
     }
 
     updateTotal(newSubTotal);
@@ -177,151 +212,121 @@ const CreateInvoice = () => {
     let totalTax = taxes.reduce((prev, next) => {
       return (prev += parseInt(next.tax_percentage));
     }, 0);
-    updateTotalTax(parseFloat(`.${totalTax}`));
+
+    updateTotalTax(totalTax);
   }, [taxes]);
 
   // calculating total
   useEffect(() => {
-    console.log(totalTax);
-    let updatedTotalWithTax = subTotal + (subTotal * totalTax);
+    let updatedTotalWithTax = subTotal + (subTotal / 100) * totalTax;
     updateTotal(updatedTotalWithTax);
   }, [subTotal, totalTax]);
 
-
   //Handle Footer
-  const handleFooter = (e) => {
+  const handleFooter = e => {
     updateFooterData({
       ...footerData,
       [e.target.name]: e.target.value
     });
-  }
+  };
 
   return (
-    <Wrapper>
-      <div className="header">
-        <Row>
-          <HalfWidthLeft>
-            <ImageUploader
-              withIcon={false}
-              withPreview={true}
-              singleImage={true}
-              onChange={picture => onDrop(picture)}
-              imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-              maxFileSize={2048}
-            />
-          </HalfWidthLeft>
+      <Wrapper>
+        <div className="header">
+          <Row>
+            <HalfWidthLeft>
+              <img src={logo} />
+              <p>-------</p>
+              <ImageUploader
+                  withIcon={false}
+                  withPreview={true}
+                  singleImage={true}
+                  onChange={onDrop}
+                  imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                  maxFileSize={5242880}
+              />
+            </HalfWidthLeft>
 
-          <HalfWidthRight>
+            <HalfWidthRight>
+              <InputWrapper>
+                <InlineInputLabel>Invoice No:</InlineInputLabel>
+                <InlineInputField
+                    type="number"
+                    name="invoice-id"
+                    placeholder="Invoice Id"
+                    value={invoice}
+                    onChange={e => setinvoice(e.target.value)}
+                />
+              </InputWrapper>
+            </HalfWidthRight>
+          </Row>
+        </div>
+
+        <div className="body">
+          <Row>
+            <HalfWidthLeft>
+              <InputWrapper>
+                <InlineInputLabel>Bill From:</InlineInputLabel>
+                <InputField
+                    type="text"
+                    name="bill_to"
+                    onChange={e => setBillFrom(e.target.value)}
+                    placeholder="Who is this Invoice from?"
+                    value={billFrom}
+                />
+              </InputWrapper>
+            </HalfWidthLeft>
+
+            <HalfWidthRight>
+              <InputWrapper>
+                <InlineInputLabel>Bill To:</InlineInputLabel>
+                <InputField
+                    type="text"
+                    name="bill_from"
+                    onChange={e => setBillTo(e.target.value)}
+                    placeholder="Who is this Invoice to?"
+                    value={billTo}
+                />
+              </InputWrapper>
+            </HalfWidthRight>
+          </Row>
+        </div>
+
+        <div className="info-and-numbers">
+          <Row>
             <InputWrapper>
-              <InlineInputLabel>Invoice No:</InlineInputLabel>
-              <InlineInputField
-                type="number"
-                name="invoice-id"
-                placeholder="Invoice Id"
-                value={invoice}
-                onChange={e => setinvoice(e.target.value)}
+              <InlineInputLabel>Voucher No:</InlineInputLabel>
+              <InputField type="text" />
+            </InputWrapper>
+
+            <InputWrapper>
+              <InlineInputLabel>Transaction Date:</InlineInputLabel>
+              <InputField type="text" />
+            </InputWrapper>
+
+            <InputWrapper>
+              <InlineInputLabel>Due Date:</InlineInputLabel>
+              <DatePicker
+                  showPopperArrow={false}
+                  selected={dueDate}
+                  onChange={date => setDueDate(date)}
               />
             </InputWrapper>
-          </HalfWidthRight>
-        </Row>
-      </div>
 
-      <div className="body">
-        <Row>
-          <HalfWidthLeft>
             <InputWrapper>
-              <InlineInputLabel>Bill From:</InlineInputLabel>
-              <InputField
-                type="text"
-                name="bill_to"
-                onChange={e => setBillFrom(e.target.value)}
-                placeholder="Who is this Invoice from?"
-                value={billFrom}
+              <InlineInputLabel>Created At:</InlineInputLabel>
+              <DatePicker
+                  showPopperArrow={false}
+                  selected={invoiceDate}
+                  onChange={date => setinvoiceDate(date)}
               />
             </InputWrapper>
-          </HalfWidthLeft>
+          </Row>
+        </div>
 
-          <HalfWidthRight>
-            <InputWrapper>
-              <InlineInputLabel>Bill To:</InlineInputLabel>
-              <InputField
-                type="text"
-                name="bill_from"
-                onChange={e => setBillTo(e.target.value)}
-                placeholder="Who is this Invoice to?"
-                value={billTo}
-              />
-            </InputWrapper>
-          </HalfWidthRight>
-        </Row>
-      </div>
-
-      <div className="info-and-numbers">
         <Row>
-          <InputWrapper>
-            <InlineInputLabel>Voucher No:</InlineInputLabel>
-            <InputField type="text" />
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel>Transaction Date:</InlineInputLabel>
-            <InputField type="text" />
-          </InputWrapper>
-
-          <InputWrapper>
-<<<<<<< HEAD
-            <InlineInputLabel htmlFor="invoice-date">Date:</InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={invoiceDate}
-              dateFormat="dd-mm-yyyy"
-              onChange={date => setinvoiceDate(date)}
-            />
-=======
-            <InlineInputLabel>Due Date:</InlineInputLabel>
-            <InputField type="text" />
->>>>>>> 40baa878b9e1644e4cec3b87e3ccfb43176e6fed
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel>Created At:</InlineInputLabel>
-            <InputField type="text" />
-          </InputWrapper>
-<<<<<<< HEAD
-
-          <InputWrapper>
-            <InlineInputLabel htmlFor="due-date">Due Date:</InlineInputLabel>
-            <DatePicker
-              showPopperArrow={false}
-              selected={dueDate}
-              dateFormat="dd-mm-yyyy"
-              onChange={date => setDueDate(date)}
-            />
-          </InputWrapper>
-
-          <InputWrapper>
-            <InlineInputLabel htmlFor="balance-due">
-              Balance Due:
-            </InlineInputLabel>
-            <InlineInputField
-              type="number"
-              name="balance-due"
-              placeholder="Balance due"
-              value={dueBanalce}
-              dateFormat="dd-mm-yyyy"
-              onChange={e => setdueBanalce(e.target.value)}
-            />
-          </InputWrapper>
-        </HalfWidthRight>
-      </Row>
-=======
-        </Row>
-      </div>
->>>>>>> 40baa878b9e1644e4cec3b87e3ccfb43176e6fed
-
-      <Row>
-        <TableMain>
-          <thead>
+          <TableMain>
+            <thead>
             <tr>
               <th>Item Name</th>
               <th>Quantity</th>
@@ -329,53 +334,53 @@ const CreateInvoice = () => {
               <th>Amount</th>
               <th></th>
             </tr>
-          </thead>
+            </thead>
 
-          <tbody>
+            <tbody>
             {items.map((item, i) => {
               return (
-                <tr key={i}>
-                  <td>
-                    {" "}
-                    <input
-                      name="name"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+                  <tr key={i}>
+                    <td>
+                      {" "}
+                      <input
+                          name="name"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                      />
+                    </td>
 
-                  <td>
-                    {" "}
-                    <input
-                      name="quantity"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+                    <td>
+                      {" "}
+                      <input
+                          name="quantity"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                      />
+                    </td>
 
-                  <td>
-                    {" "}
-                    <input
-                      name="rate"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                    />
-                  </td>
+                    <td>
+                      {" "}
+                      <input
+                          name="rate"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                      />
+                    </td>
 
-                  <td>
-                    {" "}
-                    <input
-                      name="amount"
-                      type="text"
-                      onChange={e => handleItemChange(e, i)}
-                      value={item.amount > 0 ? item.amount : 0}
-                    />
-                  </td>
+                    <td>
+                      {" "}
+                      <input
+                          name="amount"
+                          type="text"
+                          onChange={e => handleItemChange(e, i)}
+                          value={item.amount > 0 ? item.amount : 0}
+                      />
+                    </td>
 
-                  <td>
-                    <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                  </td>
-                </tr>
+                    <td>
+                      <button onClick={e => handleRemoveItem(e, i)}>X</button>
+                    </td>
+                  </tr>
               );
             })}
 
@@ -387,89 +392,93 @@ const CreateInvoice = () => {
                 <div className="sub-total">Sub Total: {subTotal}</div>
               </td>
             </tr>
-          </tbody>
-        </TableMain>
-      </Row>
+            </tbody>
+          </TableMain>
+        </Row>
 
-      <Row>
-        <HalfWidthLeft></HalfWidthLeft>
-        <HalfWidthRight>
-          <div className="column-to-the-right">
-            <Discounts className="discount-section">
-              <div className="title">Discount: </div>
-              <select onChange={e => handleDiscountType(e)}>
-                <option value="amount">Amount</option>
-                <option value="percentage">Percentage</option>
-              </select>
-              <input type="text" onChange={e => handleDiscount(e)} />
-            </Discounts>
+        <Row>
+          <HalfWidthLeft></HalfWidthLeft>
+          <HalfWidthRight>
+            <div className="column-to-the-right">
+              <Discounts className="discount-section">
+                <div className="title">Discount: </div>
+                <select onChange={e => handleDiscountType(e)}>
+                  <option value="amount">Amount</option>
+                  <option value="percentage">Percentage</option>
+                </select>
+                <input type="text" onChange={e => handleDiscount(e)} />
+              </Discounts>
 
-            <div className="taxes">
-              <div className="taxes-list">
-                {taxes.map((tax, index) => {
-                  return (
-                    <React.Fragment key={index}>
-                      <input
-                        type="text"
-                        name="type"
-                        placeholder="Tax Type"
-                        onChange={e => handleTaxChange(e, index)}
-                        value={tax.type}
-                      />
-                      <input
-                        type="number"
-                        name="tax_percentage"
-                        placeholder="Tax Percentage"
-                        onChange={e => handleTaxChange(e, index)}
-                        value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
-                      />
-                      <button onClick={e => handleRemoveTax(e, index)}>
-                        x
-                      </button>
-                    </React.Fragment>
-                  );
-                })}
+              <div className="taxes">
+                <div className="taxes-list">
+                  {taxes.map((tax, index) => {
+                    return (
+                        <React.Fragment key={index}>
+                          <input
+                              type="text"
+                              name="type"
+                              placeholder="Tax Type"
+                              onChange={e => handleTaxChange(e, index)}
+                              value={tax.type}
+                          />
+                          <input
+                              type="number"
+                              name="tax_percentage"
+                              placeholder="Tax Percentage"
+                              onChange={e => handleTaxChange(e, index)}
+                              value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
+                          />
+                          <button onClick={e => handleRemoveTax(e, index)}>
+                            x
+                          </button>
+                        </React.Fragment>
+                    );
+                  })}
+                </div>
+                <button onClick={e => handleMultipleTaxField(e)}>
+                  + Add Tax
+                </button>
               </div>
-              <button onClick={e => handleMultipleTaxField(e)}>
-                + Add Tax
-              </button>
+
+              <div className="total-board">
+                Total: <span>${totoal}</span>
+              </div>
             </div>
+          </HalfWidthRight>
+        </Row>
 
-            <div className="total-board">
-              Total: <span>${totoal}</span>
+        <Row>
+          <div className="footer">
+            <div>
+              <label>Title: </label>
+              <input type="text" name="title" onChange={e => handleFooter(e)} />
+            </div>
+            <div>
+              <label>Content: </label>
+              <textarea
+                  placeholder="footer content"
+                  name="content"
+                  onChange={e => handleFooter(e)}
+              ></textarea>
             </div>
           </div>
-        </HalfWidthRight>
-      </Row>
+        </Row>
 
-      <Row>
-        <div className="footer">
-          <div>
-            <label>Title: </label>
-            <input type="text" name="title" onChange={ (e) => handleFooter(e) } />
-          </div>
-          <div>
-            <label>Content: </label>
-            <textarea placeholder="footer content" name="content" onChange={ (e) => handleFooter(e) }></textarea>
-          </div>
-        </div>
-      </Row>
-
-      <SubmitRow>
-        <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
-        {submit && (
-          <Link
-            className={"show_pdf"}
-            target="_blank"
-            to={{
-              pathname: "/pdf"
-            }}
-          >
-            <span>Show PDF</span>
-          </Link>
-        )}
-      </SubmitRow>
-    </Wrapper>
+        <SubmitRow>
+          <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
+          {submit && (
+              <Link
+                  className={"show_pdf"}
+                  target="_blank"
+                  to={{
+                    pathname: "/pdf"
+                  }}
+              >
+                <span>Show PDF</span>
+              </Link>
+          )}
+        </SubmitRow>
+      </Wrapper>
   );
 };
 
