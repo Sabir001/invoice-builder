@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ImageUploader from "react-images-upload";
-// import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -31,30 +30,23 @@ import {
 
 const CreateInvoice = () => {
   const [logo, setLogo] = useState();
+  const [invoice, setinvoice] = useState("");
   const [billFrom, setBillFrom] = useState("");
   const [billTo, setBillTo] = useState("");
-  const [invoice, setinvoice] = useState("");
-  const [invoiceDate, setinvoiceDate] = useState(new Date());
-  const [terms, setTerms] = useState("");
+  const [voucherNumber, setVoucherNumber] = useState("");
+  const [transactionDate, setTransactionDate] = useState("");
   const [dueDate, setDueDate] = useState(new Date());
-  const [dueBanalce, setdueBanalce] = useState(0);
+  const [createdAt, setCreatedAt] = useState(new Date());
 
   const [items, setItems] = useState([
-    {
-      name: "",
-      quantity: 0,
-      rate: 0,
-      amount: 0
-    }
+    { name: "", quantity: 0, rate: 0, amount: 0 }
   ]);
-
   const [subTotal, updateSubTotal] = useState(0);
 
   const [discount, updateDiscount] = useState({
     type: "amount",
     discountAmount: 0
   });
-
   const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0 }]);
   const [totalTax, updateTotalTax] = useState(0);
 
@@ -63,23 +55,31 @@ const CreateInvoice = () => {
     content: undefined
   });
 
-  const [submit, setSubmit] = useState(false);
-
   const [totoal, updateTotal] = useState(0);
 
-  const handleSubmit = () => {
-    localStorage.clear();
-    localStorage.setItem("billFrom", billFrom);
-    localStorage.setItem("billTo", billTo);
-    localStorage.setItem("invoice_no", invoice);
-    localStorage.setItem("invoiceDate", invoiceDate);
-    localStorage.setItem("dueDate", dueDate);
-    localStorage.setItem("terms", terms);
-    localStorage.setItem("dueBanalce", dueBanalce);
-    localStorage.setItem("items", items);
-    localStorage.setItem("logo", logo);
+  const handleSave = e => {
+    e.preventDefault();
 
-    setSubmit(true);
+    localStorage.removeItem("InvoiceData");
+
+    const finalData = {
+      logo: logo,
+      invoice_no: invoice,
+      from: billFrom,
+      to: billTo,
+      voucher_no: voucherNumber,
+      transaction_date: transactionDate,
+      due_date: dueDate,
+      createdAt: createdAt,
+      items: items,
+      sub_totoal: subTotal,
+      discount: discount,
+      taxes: taxes,
+      total: totoal,
+      footer_data: footerData
+    };
+
+    localStorage.setItem("InvoiceData", JSON.stringify(finalData));
   };
 
   const onDrop = logo => {
@@ -263,7 +263,7 @@ const CreateInvoice = () => {
               <SendButton>Send Invoice</SendButton>
               <ActionButtons>
                 <button>Preview</button>
-                <button onClick={e => handleSubmit()}>Save</button>
+                <button onClick={e => handleSave(e)}>Save</button>
                 <button>Download</button>
               </ActionButtons>
             </ContentRight>
@@ -305,12 +305,20 @@ const CreateInvoice = () => {
               <InnerRow className={"infoform"}>
                 <InputWrapper>
                   <InputLabel>Voucher No:</InputLabel>
-                  <InputField type="text" />
+                  <InputField
+                    type="text"
+                    value={voucherNumber}
+                    onChange={e => setVoucherNumber(e.target.value)}
+                  />
                 </InputWrapper>
 
                 <InputWrapper>
                   <InputLabel>Transaction Date:</InputLabel>
-                  <InputField type="text" />
+                  <DatePicker
+                    showPopperArrow={false}
+                    selected={transactionDate}
+                    onChange={date => setTransactionDate(date)}
+                  />
                 </InputWrapper>
 
                 <InputWrapper>
@@ -326,8 +334,8 @@ const CreateInvoice = () => {
                   <InputLabel>Created At:</InputLabel>
                   <DatePicker
                     showPopperArrow={false}
-                    selected={invoiceDate}
-                    onChange={date => setinvoiceDate(date)}
+                    selected={createdAt}
+                    onChange={date => setCreatedAt(date)}
                   />
                 </InputWrapper>
               </InnerRow>
@@ -485,13 +493,13 @@ const CreateInvoice = () => {
                 <InputWrapper>
                   <InputLabel>Additional Info</InputLabel>
                   <InputField
-                    name="footer_title"
+                    name="title"
                     onChange={e => handleFooter(e)}
                     placeholder="Title"
                   />
 
                   <TextareaField
-                    name="bill_to"
+                    name="content"
                     onChange={e => setBillFrom(e.target.value)}
                     placeholder="Additional Info"
                     onChange={e => handleFooter(e)}
