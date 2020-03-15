@@ -97,7 +97,6 @@ const CreateInvoice = () => {
 
   const handleSubmit = () => {
     console.log("Base64: ", logo);
-    // console.log( base64toBlob(logo, "jpg/png") );
 
     localStorage.clear();
     localStorage.setItem("billFrom", billFrom);
@@ -114,16 +113,20 @@ const CreateInvoice = () => {
   };
 
   const onDrop = logo => {
-    console.log("Logo Object", logo);
+    console.log("Logo Object", logo[0]);
     let file = logo[0];
 
     // const objectURL = window.URL.createObjectURL(file);
     // setLogo(objectURL);
 
     let reader = new FileReader();
-    reader.readAsDataURL(file);
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+
     reader.onloadend = () => {
-      setLogo(reader.result);
+      setLogo(file ? reader.result : logo);
     };
   };
 
@@ -151,22 +154,23 @@ const CreateInvoice = () => {
   const handleItemChange = (e, index) => {
     const newItems = [...items];
 
-    switch(e.target.name) {
-      case 'rate':
+    switch (e.target.name) {
+      case "rate":
         newItems[index].rate = e.target.value;
         break;
 
-      case 'quantity':
+      case "quantity":
         newItems[index].quantity = e.target.value;
         break;
 
-      case 'name':
+      case "name":
         newItems[index].name = e.target.value;
         break;
     }
 
-    if(e.target.name == 'rate' || e.target.name == 'quantity') {
-      newItems[index].amount = parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
+    if (e.target.name == "rate" || e.target.name == "quantity") {
+      newItems[index].amount =
+        parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
     }
 
     setItems(newItems);
@@ -450,7 +454,6 @@ const CreateInvoice = () => {
                       </td>
                     </tr>
 
-
                     {taxes.map((tax, index) => {
                       return (
                         <React.Fragment key={index}>
@@ -473,7 +476,11 @@ const CreateInvoice = () => {
                                   name="tax_percentage"
                                   placeholder="Tax Percentage"
                                   onChange={e => handleTaxChange(e, index)}
-                                  value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
+                                  value={
+                                    tax.tax_percentage > 0
+                                      ? tax.tax_percentage
+                                      : ""
+                                  }
                                   className="tax_amount"
                                 />
                                 <button
@@ -529,7 +536,6 @@ const CreateInvoice = () => {
               </AdditionalRow>
 
               <FooterRow></FooterRow>
-
             </ContentLeft>
 
             <ContentRight className={"bodySideControls"}>
