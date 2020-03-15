@@ -20,26 +20,19 @@ import {
   InputWrapper,
   InputLabel,
   TextareaField,
-  // InlineInputLabel,
-  // InlineInputField,
   TableMain,
   Discounts,
-  // SubmitRow,
   SendButton,
   ActionButtons,
-  // SubmitButton,
   TaxRow,
   FinalTotal,
   FooterRow
 } from "../../style/create-style";
-// import styled from "styled-components";
 
 const CreateInvoice = () => {
   const [logo, setLogo] = useState();
-
   const [billFrom, setBillFrom] = useState("");
   const [billTo, setBillTo] = useState("");
-
   const [invoice, setinvoice] = useState("");
   const [invoiceDate, setinvoiceDate] = useState(new Date());
   const [terms, setTerms] = useState("");
@@ -74,31 +67,7 @@ const CreateInvoice = () => {
 
   const [totoal, updateTotal] = useState(0);
 
-  function base64toBlob(base64Data, contentType) {
-    contentType = contentType || "";
-    var sliceSize = 1024;
-    var byteCharacters = atob(base64Data);
-    var bytesLength = byteCharacters.length;
-    var slicesCount = Math.ceil(bytesLength / sliceSize);
-    var byteArrays = new Array(slicesCount);
-
-    for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-      var begin = sliceIndex * sliceSize;
-      var end = Math.min(begin + sliceSize, bytesLength);
-
-      var bytes = new Array(end - begin);
-      for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-        bytes[i] = byteCharacters[offset].charCodeAt(0);
-      }
-      byteArrays[sliceIndex] = new Uint8Array(bytes);
-    }
-    return new Blob(byteArrays, { type: contentType });
-  }
-
   const handleSubmit = () => {
-    console.log("Base64: ", logo);
-    // console.log( base64toBlob(logo, "jpg/png") );
-
     localStorage.clear();
     localStorage.setItem("billFrom", billFrom);
     localStorage.setItem("billTo", billTo);
@@ -114,11 +83,7 @@ const CreateInvoice = () => {
   };
 
   const onDrop = logo => {
-    console.log("Logo Object", logo);
     let file = logo[0];
-
-    // const objectURL = window.URL.createObjectURL(file);
-    // setLogo(objectURL);
 
     let reader = new FileReader();
     reader.readAsDataURL(file);
@@ -129,9 +94,7 @@ const CreateInvoice = () => {
 
   const handleRemoveItem = (e, i) => {
     e.preventDefault();
-
-    let newItems = items.filter((item, index) => i !== index);
-
+    const newItems = items.filter((_, index) => i !== index);
     setItems(newItems);
   };
 
@@ -151,22 +114,23 @@ const CreateInvoice = () => {
   const handleItemChange = (e, index) => {
     const newItems = [...items];
 
-    switch(e.target.name) {
-      case 'rate':
+    switch (e.target.name) {
+      case "rate":
         newItems[index].rate = e.target.value;
         break;
 
-      case 'quantity':
+      case "quantity":
         newItems[index].quantity = e.target.value;
         break;
 
-      case 'name':
+      case "name":
         newItems[index].name = e.target.value;
         break;
     }
 
-    if(e.target.name == 'rate' || e.target.name == 'quantity') {
-      newItems[index].amount = parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
+    if (e.target.name == "rate" || e.target.name == "quantity") {
+      newItems[index].amount =
+        parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
     }
 
     setItems(newItems);
@@ -203,7 +167,7 @@ const CreateInvoice = () => {
     }
 
     if (discount.type === "percentage") {
-      let discountInPercentage = subTotal * (discount.discountAmount / 100);
+      const discountInPercentage = subTotal * (discount.discountAmount / 100);
       newSubTotal = subTotal - discountInPercentage;
     }
 
@@ -410,7 +374,7 @@ const CreateInvoice = () => {
                           </td>
 
                           <td>
-                            <span> {item.amount} </span>
+                            <span>{item.amount}</span>
                             <button onClick={e => handleRemoveItem(e, i)}>
                               X
                             </button>
@@ -450,7 +414,6 @@ const CreateInvoice = () => {
                       </td>
                     </tr>
 
-
                     {taxes.map((tax, index) => {
                       return (
                         <React.Fragment key={index}>
@@ -473,7 +436,11 @@ const CreateInvoice = () => {
                                   name="tax_percentage"
                                   placeholder="Tax Percentage"
                                   onChange={e => handleTaxChange(e, index)}
-                                  value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
+                                  value={
+                                    tax.tax_percentage > 0
+                                      ? tax.tax_percentage
+                                      : ""
+                                  }
                                   className="tax_amount"
                                 />
                                 <button
@@ -529,7 +496,6 @@ const CreateInvoice = () => {
               </AdditionalRow>
 
               <FooterRow></FooterRow>
-
             </ContentLeft>
 
             <ContentRight className={"bodySideControls"}>
