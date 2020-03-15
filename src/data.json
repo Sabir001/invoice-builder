@@ -1,27 +1,44 @@
 {
-    "logo": "https://localhost/images/logo",
-    "invoice_no": "fdalfhahfdafddf",
-    "from":"name : X Company address : X Company city : X Company country : X Company",
-    "to": "name : X Company address : X Company city : X Company country : X Company",
-    "voucher_no": "",
-    "transaction_date": "",
-    "due_date": "",
-    "createdAt": "",
-    "items": [
-        { "serial_number": "01", "product": "NX", "unit_price": "$5", "quantity": "2", "Amount": "$10" },
-        { "serial_number": "01", "product": "NX", "unit_price": "$5", "quantity": "2", "Amount": "$10" },
-        { "serial_number": "01", "product": "NX", "unit_price": "$5", "quantity": "2", "Amount": "$10" }
-    ],
-    "sub_totoal": "30",
-    "discount": {
-        "type": "amount",
-        "amount": "10"
+  "logo": "https://localhost/images/logo",
+  "invoice_no": "fdalfhahfdafddf",
+  "from": "name : X Company address : X Company city : X Company country : X Company",
+  "to": "name : X Company address : X Company city : X Company country : X Company",
+  "voucher_no": "",
+  "transaction_date": "",
+  "due_date": "",
+  "createdAt": "",
+  "items": [
+    {
+      "serial_number": "01",
+      "product": "NX",
+      "unit_price": "$5",
+      "quantity": "2",
+      "Amount": "$10"
     },
-    "taxes": [".3", ".5", ".2"],
-    "total": "400",
-    "footer_data": {
-        "title": "Terms and Conditions",
-        "content": "blah blah blah"
+    {
+      "serial_number": "01",
+      "product": "NX",
+      "unit_price": "$5",
+      "quantity": "2",
+      "Amount": "$10"
+    },
+    {
+      "serial_number": "01",
+      "product": "NX",
+      "unit_price": "$5",
+      "quantity": "2",
+      "Amount": "$10"
     }
-
+  ],
+  "sub_totoal": "30",
+  "discount": {
+    "type": "amount",
+    "amount": "10"
+  },
+  "taxes": [".3", ".5", ".2"],
+  "total": "400",
+  "footer_data": {
+    "title": "Terms and Conditions",
+    "content": "blah blah blah"
+  }
 }

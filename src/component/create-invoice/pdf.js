@@ -5,7 +5,8 @@ import {
   Page,
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  Image
 } from "@react-pdf/renderer";
 
 const PDFDisplay = () => {
@@ -19,7 +20,7 @@ const PDFDisplay = () => {
         height: "100%"
       }}
     >
-      {console.log("props", localStorage.getItem("billFrom"))}
+      {console.log("props", localStorage.getItem("items"))}
       <MyDocument />
     </PDFViewer>
   );
@@ -36,7 +37,12 @@ const styles = StyleSheet.create({
   section: {
     margin: 10,
     padding: 10,
-    flexGrow: 1
+    flexGrow: 1,
+  },
+  image: {
+    width: "60px",
+    padding: 0,
+    backgroundColor: "grey"
   }
 });
 
@@ -45,15 +51,16 @@ const MyDocument = () => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-        <Text>Bill From: { localStorage.getItem('billFrom') }</Text>
-        <Text>Bill To: { localStorage.getItem('billTo') }</Text>
+        <Image style={styles.image} debug={true} src={localStorage.getItem("logo")} />
+        <Text>Bill From: {localStorage.getItem("billFrom")}</Text>
+        <Text>Bill To: {localStorage.getItem("billTo")}</Text>
       </View>
       <View style={styles.section}>
-      <Text>Invoice No: { localStorage.getItem('invoice_no') }</Text>
-      <Text>Invoice Date: { localStorage.getItem('invoiceDate') }</Text>
-      <Text>Due Date: { localStorage.getItem('dueDate') }</Text>
-      <Text>Invoice Terms: { localStorage.getItem('terms') }</Text>
-      <Text>Due Balance: { localStorage.getItem('dueBanalce') }</Text>
+        <Text>Invoice No: {localStorage.getItem("invoice_no")}</Text>
+        <Text>Invoice Date: {localStorage.getItem("invoiceDate")}</Text>
+        <Text>Due Date: {localStorage.getItem("dueDate")}</Text>
+        <Text>Invoice Terms: {localStorage.getItem("terms")}</Text>
+        <Text>Due Balance: {localStorage.getItem("dueBanalce")}</Text>
       </View>
     </Page>
   </Document>
