@@ -86,9 +86,13 @@ const CreateInvoice = () => {
     let file = logo[0];
 
     let reader = new FileReader();
-    reader.readAsDataURL(file);
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+
     reader.onloadend = () => {
-      setLogo(reader.result);
+      setLogo(file ? reader.result : logo);
     };
   };
 
