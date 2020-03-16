@@ -28,15 +28,22 @@ const PDFDisplay = () => {
 export default PDFDisplay;
 // Create styles
 const styles = StyleSheet.create({
-    page: {
-        flexDirection: "row",
-        backgroundColor: "#E4E4E4"
-    },
-    section: {
-        margin: 10,
-        padding: 10,
-        flexGrow: 1
-    }
+
+  page: {
+    flexDirection: "row",
+    backgroundColor: "#E4E4E4"
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+  image: {
+    width: "100px",
+    padding: 0,
+    backgroundColor: "grey"
+  }
+
 });
 const invoiceValues = {
     logo: "https://localhost/images/logo",
@@ -85,6 +92,7 @@ const invoiceValues = {
     }
 };
 // Create Document Component
+
 const MyDocument = () => {
     console.log("hi");
     console.log(invoiceValues);
@@ -116,7 +124,7 @@ const MyDocument = () => {
                             <Text>Amount {item.Amount}</Text>
                         </View>
                     ))}
-                    <Image src="https://dummyimage.com/wuxga" alt="images" />
+                    <Image style={styles.image}  src="https://pixabay.com/illustrations/head-the-dummy-avatar-man-tie-659652/" />
                 </View>
 
 
@@ -124,3 +132,4 @@ const MyDocument = () => {
         </Document>
     );
 };
+

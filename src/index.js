@@ -13,6 +13,20 @@ const GlobalStyle = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: #485195;
+      outline: 0;
+      border-radius: 10px;
+    }
   }
   code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',

@@ -1,23 +1,38 @@
 import React, { useState, useEffect } from "react";
 import ImageUploader from "react-images-upload";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Wrapper, Row } from "../../style/common";
-
 import {
-  HalfWidthLeft,
-  HalfWidthRight,
+  Wrapper,
+  Row,
+  InnerRow,
+  AdditionalRow,
+  MainHeader,
+  Container,
+  ContentLeft,
+  ContentRight,
+  MainBody,
+  FormLeft,
+  FormRight,
   InputField,
   InputWrapper,
-  InlineInputLabel,
-  InlineInputField,
+  InputLabel,
+  TextareaField,
+  // InlineInputLabel,
+  // InlineInputField,
   TableMain,
   Discounts,
-  SubmitRow,
-  SubmitButton
+  // SubmitRow,
+  SendButton,
+  ActionButtons,
+  // SubmitButton,
+  TaxRow,
+  FinalTotal,
+  FooterRow
 } from "../../style/create-style";
+// import styled from "styled-components";
 
 const CreateInvoice = () => {
   const [logo, setLogo] = useState();
@@ -34,8 +49,8 @@ const CreateInvoice = () => {
   const [items, setItems] = useState([
     {
       name: "",
-      quantity: "",
-      rate: "",
+      quantity: 0,
+      rate: 0,
       amount: 0
     }
   ]);
@@ -102,14 +117,14 @@ const CreateInvoice = () => {
     console.log("Logo Object", logo);
     let file = logo[0];
 
-    const objectURL = window.URL.createObjectURL(file);
-    setLogo(objectURL);
+    // const objectURL = window.URL.createObjectURL(file);
+    // setLogo(objectURL);
 
-    // let reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onloadend = () => {
-    //   setLogo( reader.result );
-    // };
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setLogo(reader.result);
+    };
   };
 
   const handleRemoveItem = (e, i) => {
@@ -125,8 +140,8 @@ const CreateInvoice = () => {
 
     const newItem = {
       name: "",
-      quantity: "",
-      rate: "",
+      quantity: 0,
+      rate: 0,
       amount: 0
     };
 
@@ -135,10 +150,24 @@ const CreateInvoice = () => {
 
   const handleItemChange = (e, index) => {
     const newItems = [...items];
-    newItems[index] = {
-      ...items[index],
-      [e.target.name]: e.target.value
-    };
+
+    switch(e.target.name) {
+      case 'rate':
+        newItems[index].rate = e.target.value;
+        break;
+
+      case 'quantity':
+        newItems[index].quantity = e.target.value;
+        break;
+
+      case 'name':
+        newItems[index].name = e.target.value;
+        break;
+    }
+
+    if(e.target.name == 'rate' || e.target.name == 'quantity') {
+      newItems[index].amount = parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
+    }
 
     setItems(newItems);
   };
@@ -151,6 +180,7 @@ const CreateInvoice = () => {
     updateSubTotal(subTotalState);
   }, [items]);
 
+  // Handle Discount
   const handleDiscountType = e => {
     updateDiscount({ ...discount, ...{ type: e.target.value } });
   };
@@ -165,7 +195,6 @@ const CreateInvoice = () => {
     updateDiscount({ ...discount, ...{ discountAmount: value } });
   };
 
-  // Handle discount part
   useEffect(() => {
     let newSubTotal;
 
@@ -174,8 +203,8 @@ const CreateInvoice = () => {
     }
 
     if (discount.type === "percentage") {
-      newSubTotal =
-          subTotal - (subTotal / 100) * parseFloat(`.${discount.discountAmount}`);
+      let discountInPercentage = subTotal * (discount.discountAmount / 100);
+      newSubTotal = subTotal - discountInPercentage;
     }
 
     updateTotal(newSubTotal);
@@ -232,252 +261,289 @@ const CreateInvoice = () => {
 
   return (
       <Wrapper>
-        <div className="header">
-          <Row>
-            <HalfWidthLeft>
-              <img src={logo} />
-              <p>-------</p>
-              <ImageUploader
-                  withIcon={false}
-                  withPreview={true}
-                  singleImage={true}
-                  onChange={onDrop}
-                  imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-                  maxFileSize={5242880}
-              />
-            </HalfWidthLeft>
+        {/* Header Part */}
+        <MainHeader>
+          <Container>
+            <Row className={"row"}>
+              <ContentLeft>
+                <InnerRow>
+                  <ImageUploader
+                      withIcon={false}
+                      withPreview={true}
+                      singleImage={true}
+                      buttonText={""}
+                      withLabel={true}
+                      label={"Drop Your Logo"}
+                      onChange={onDrop}
+                      imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                      maxFileSize={5242880}
+                  />
+                  <InputWrapper className={"invoice"}>
+                    <InputLabel>Invoice No</InputLabel>
+                    <InputField
+                        type="number"
+                        name="invoice-id"
+                        placeholder="Add Invoice No"
+                        value={invoice}
+                        onChange={e => setinvoice(e.target.value)}
+                    />
+                  </InputWrapper>
+                </InnerRow>
+              </ContentLeft>
 
-            <HalfWidthRight>
-              <InputWrapper>
-                <InlineInputLabel>Invoice No:</InlineInputLabel>
-                <InlineInputField
-                    type="number"
-                    name="invoice-id"
-                    placeholder="Invoice Id"
-                    value={invoice}
-                    onChange={e => setinvoice(e.target.value)}
-                />
-              </InputWrapper>
-            </HalfWidthRight>
-          </Row>
-        </div>
+              <ContentRight className={"header_buttons"}>
+                <SendButton>Send Invoice</SendButton>
+                <ActionButtons>
+                  <button>Preview</button>
+                  <button onClick={e => handleSubmit()}>Save</button>
+                  <button>Download</button>
+                </ActionButtons>
+              </ContentRight>
+            </Row>
+          </Container>
+        </MainHeader>
 
-        <div className="body">
-          <Row>
-            <HalfWidthLeft>
-              <InputWrapper>
-                <InlineInputLabel>Bill From:</InlineInputLabel>
-                <InputField
-                    type="text"
-                    name="bill_to"
-                    onChange={e => setBillFrom(e.target.value)}
-                    placeholder="Who is this Invoice from?"
-                    value={billFrom}
-                />
-              </InputWrapper>
-            </HalfWidthLeft>
+        {/* Body Part */}
+        <MainBody>
+          <Container>
+            <Row>
+              <ContentLeft>
+                <InnerRow>
+                  <FormLeft>
+                    <InputWrapper>
+                      <InputLabel>From</InputLabel>
+                      <TextareaField
+                          name="bill_to"
+                          onChange={e => setBillFrom(e.target.value)}
+                          placeholder="Name: X Company"
+                          value={billFrom}
+                      ></TextareaField>
+                    </InputWrapper>
+                  </FormLeft>
 
-            <HalfWidthRight>
-              <InputWrapper>
-                <InlineInputLabel>Bill To:</InlineInputLabel>
-                <InputField
-                    type="text"
-                    name="bill_from"
-                    onChange={e => setBillTo(e.target.value)}
-                    placeholder="Who is this Invoice to?"
-                    value={billTo}
-                />
-              </InputWrapper>
-            </HalfWidthRight>
-          </Row>
-        </div>
+                  <FormRight>
+                    <InputWrapper>
+                      <InputLabel>To</InputLabel>
+                      <TextareaField
+                          name="bill_from"
+                          onChange={e => setBillTo(e.target.value)}
+                          placeholder="Name: Y Company"
+                          value={billTo}
+                      ></TextareaField>
+                    </InputWrapper>
+                  </FormRight>
+                </InnerRow>
 
-        <div className="info-and-numbers">
-          <Row>
-            <InputWrapper>
-              <InlineInputLabel>Voucher No:</InlineInputLabel>
-              <InputField type="text" />
-            </InputWrapper>
+                <InnerRow className={"infoform"}>
+                  <InputWrapper>
+                    <InputLabel>Voucher No:</InputLabel>
+                    <InputField type="text" />
+                  </InputWrapper>
 
-            <InputWrapper>
-              <InlineInputLabel>Transaction Date:</InlineInputLabel>
-              <InputField type="text" />
-            </InputWrapper>
+                  <InputWrapper>
+                    <InputLabel>Transaction Date:</InputLabel>
+                    <InputField type="text" />
+                  </InputWrapper>
 
-            <InputWrapper>
-              <InlineInputLabel>Due Date:</InlineInputLabel>
-              <DatePicker
-                  showPopperArrow={false}
-                  selected={dueDate}
-                  onChange={date => setDueDate(date)}
-              />
-            </InputWrapper>
+                  <InputWrapper>
+                    <InputLabel>Due Date:</InputLabel>
+                    <DatePicker
+                        showPopperArrow={false}
+                        selected={dueDate}
+                        onChange={date => setDueDate(date)}
+                    />
+                  </InputWrapper>
 
-            <InputWrapper>
-              <InlineInputLabel>Created At:</InlineInputLabel>
-              <DatePicker
-                  showPopperArrow={false}
-                  selected={invoiceDate}
-                  onChange={date => setinvoiceDate(date)}
-              />
-            </InputWrapper>
-          </Row>
-        </div>
+                  <InputWrapper>
+                    <InputLabel>Created At:</InputLabel>
+                    <DatePicker
+                        showPopperArrow={false}
+                        selected={invoiceDate}
+                        onChange={date => setinvoiceDate(date)}
+                    />
+                  </InputWrapper>
+                </InnerRow>
 
-        <Row>
-          <TableMain>
-            <thead>
-            <tr>
-              <th>Item Name</th>
-              <th>Quantity</th>
-              <th>Rate</th>
-              <th>Amount</th>
-              <th></th>
-            </tr>
-            </thead>
+                <InnerRow>
+                  <TableMain>
+                    <thead>
+                    <tr>
+                      <th>Serial No</th>
+                      <th>Item Name</th>
+                      <th>Unit Price</th>
+                      <th>Quantity</th>
+                      <th>Amount</th>
+                    </tr>
+                    </thead>
 
-            <tbody>
-            {items.map((item, i) => {
-              return (
-                  <tr key={i}>
-                    <td>
-                      {" "}
-                      <input
-                          name="name"
-                          type="text"
-                          onChange={e => handleItemChange(e, i)}
-                      />
-                    </td>
+                    <tbody>
+                    {items.map((item, i) => {
+                      return (
+                          <tr key={i}>
+                            <td>{i + 1}</td>
 
-                    <td>
-                      {" "}
-                      <input
-                          name="quantity"
-                          type="text"
-                          onChange={e => handleItemChange(e, i)}
-                      />
-                    </td>
+                            <td>
+                              <InputField
+                                  name="name"
+                                  type="text"
+                                  placeholder="Write Item Name"
+                                  onChange={e => handleItemChange(e, i)}
+                              />
+                            </td>
 
-                    <td>
-                      {" "}
-                      <input
-                          name="rate"
-                          type="text"
-                          onChange={e => handleItemChange(e, i)}
-                      />
-                    </td>
+                            <td>
+                              <InputField
+                                  name="quantity"
+                                  type="text"
+                                  placeholder="0"
+                                  onChange={e => handleItemChange(e, i)}
+                              />
+                            </td>
 
-                    <td>
-                      {" "}
-                      <input
-                          name="amount"
-                          type="text"
-                          onChange={e => handleItemChange(e, i)}
-                          value={item.amount > 0 ? item.amount : 0}
-                      />
-                    </td>
+                            <td>
+                              <InputField
+                                  name="rate"
+                                  type="text"
+                                  placeholder="1"
+                                  onChange={e => handleItemChange(e, i)}
+                              />
+                            </td>
 
-                    <td>
-                      <button onClick={e => handleRemoveItem(e, i)}>X</button>
-                    </td>
-                  </tr>
-              );
-            })}
+                            <td>
+                              <span> {item.amount} </span>
+                              <button onClick={e => handleRemoveItem(e, i)}>
+                                X
+                              </button>
+                            </td>
+                          </tr>
+                      );
+                    })}
 
-            <tr>
-              <td colSpan="3">
-                <button onClick={e => handleAddItem(e)}>+ Line Item</button>
-              </td>
-              <td>
-                <div className="sub-total">Sub Total: {subTotal}</div>
-              </td>
-            </tr>
-            </tbody>
-          </TableMain>
-        </Row>
+                    <tr>
+                      <td className={"add_items"} colSpan="3">
+                        <button onClick={e => handleAddItem(e)}>
+                          + Line Item
+                        </button>
+                      </td>
+                      <td className={"subtotal_label"}>
+                        <div>Sub Total</div>
+                      </td>
+                      <td className={"subtotal_amount"}>
+                        <div>{subTotal}</div>
+                      </td>
+                    </tr>
 
-        <Row>
-          <HalfWidthLeft></HalfWidthLeft>
-          <HalfWidthRight>
-            <div className="column-to-the-right">
-              <Discounts className="discount-section">
-                <div className="title">Discount: </div>
-                <select onChange={e => handleDiscountType(e)}>
-                  <option value="amount">Amount</option>
-                  <option value="percentage">Percentage</option>
-                </select>
-                <input type="text" onChange={e => handleDiscount(e)} />
-              </Discounts>
-
-              <div className="taxes">
-                <div className="taxes-list">
-                  {taxes.map((tax, index) => {
-                    return (
-                        <React.Fragment key={index}>
-                          <input
+                    <tr className="calculation">
+                      <td className={"blank"} colSpan="3"></td>
+                      <td className={"discount"} colSpan="2">
+                        <Discounts>
+                          <InputLabel>Discount</InputLabel>
+                          <select onChange={e => handleDiscountType(e)}>
+                            <option value="amount">Amount</option>
+                            <option value="percentage">Percentage</option>
+                          </select>
+                          <InputField
                               type="text"
-                              name="type"
-                              placeholder="Tax Type"
-                              onChange={e => handleTaxChange(e, index)}
-                              value={tax.type}
+                              onChange={e => handleDiscount(e)}
                           />
-                          <input
-                              type="number"
-                              name="tax_percentage"
-                              placeholder="Tax Percentage"
-                              onChange={e => handleTaxChange(e, index)}
-                              value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
-                          />
-                          <button onClick={e => handleRemoveTax(e, index)}>
-                            x
-                          </button>
-                        </React.Fragment>
-                    );
-                  })}
-                </div>
-                <button onClick={e => handleMultipleTaxField(e)}>
-                  + Add Tax
-                </button>
-              </div>
+                        </Discounts>
+                      </td>
+                    </tr>
 
-              <div className="total-board">
-                Total: <span>${totoal}</span>
-              </div>
-            </div>
-          </HalfWidthRight>
-        </Row>
 
-        <Row>
-          <div className="footer">
-            <div>
-              <label>Title: </label>
-              <input type="text" name="title" onChange={e => handleFooter(e)} />
-            </div>
-            <div>
-              <label>Content: </label>
-              <textarea
-                  placeholder="footer content"
-                  name="content"
-                  onChange={e => handleFooter(e)}
-              ></textarea>
-            </div>
-          </div>
-        </Row>
+                    {taxes.map((tax, index) => {
+                      return (
+                          <React.Fragment key={index}>
+                            <tr className="calculation">
+                              <td className={"blank"} colSpan="3"></td>
+                              <td className={"tax"} colSpan="2">
+                                <TaxRow>
+                                  <InputField
+                                      className="tax_type"
+                                      placeholder="Tax Type"
+                                      type="text"
+                                      name="type"
+                                      placeholder="Tax Type"
+                                      onChange={e => handleTaxChange(e, index)}
+                                      value={tax.type}
+                                  />
 
-        <SubmitRow>
-          <SubmitButton onClick={e => handleSubmit()}>Submit</SubmitButton>
-          {submit && (
-              <Link
-                  className={"show_pdf"}
-                  target="_blank"
-                  to={{
-                    pathname: "/pdf"
-                  }}
-              >
-                <span>Show PDF</span>
-              </Link>
-          )}
-        </SubmitRow>
+                                  <InputField
+                                      type="number"
+                                      name="tax_percentage"
+                                      placeholder="Tax Percentage"
+                                      onChange={e => handleTaxChange(e, index)}
+                                      value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
+                                      className="tax_amount"
+                                  />
+                                  <button
+                                      onClick={e => handleRemoveTax(e, index)}
+                                  >
+                                    X
+                                  </button>
+                                </TaxRow>
+                              </td>
+                            </tr>
+                          </React.Fragment>
+                      );
+                    })}
+
+                    <tr className="calculation">
+                      <td className={"blank"} colSpan="3"></td>
+                      <td className={"add_tax"} colSpan="2">
+                        <button onClick={e => handleMultipleTaxField(e)}>
+                          <span>+</span> Add Tax
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr className="calculation">
+                      <td className={"blank"} colSpan="3"></td>
+                      <td className={"summary"} colSpan="2">
+                        <FinalTotal>
+                          <InputLabel>Total</InputLabel>
+                          <InputLabel>${totoal}</InputLabel>
+                        </FinalTotal>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </TableMain>
+                </InnerRow>
+
+                <AdditionalRow>
+                  <InputWrapper>
+                    <InputLabel>Additional Info</InputLabel>
+                    <InputField
+                        name="footer_title"
+                        onChange={e => handleFooter(e)}
+                        placeholder="Title"
+                    />
+
+                    <TextareaField
+                        name="bill_to"
+                        onChange={e => setBillFrom(e.target.value)}
+                        placeholder="Additional Info"
+                        onChange={e => handleFooter(e)}
+                    ></TextareaField>
+                  </InputWrapper>
+                </AdditionalRow>
+
+                <FooterRow></FooterRow>
+
+              </ContentLeft>
+
+              <ContentRight className={"bodySideControls"}>
+                <InputWrapper>
+                  <InputLabel>Currency</InputLabel>
+                  <select onChange={e => handleDiscountType(e)}>
+                    <option value="amount">BDT</option>
+                    <option value="percentage">USD</option>
+                  </select>
+                </InputWrapper>
+              </ContentRight>
+            </Row>
+          </Container>
+        </MainBody>
       </Wrapper>
   );
 };
