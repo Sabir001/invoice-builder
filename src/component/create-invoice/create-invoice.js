@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ImageUploader from "react-images-upload";
-// import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -20,48 +19,34 @@ import {
   InputWrapper,
   InputLabel,
   TextareaField,
-  // InlineInputLabel,
-  // InlineInputField,
   TableMain,
   Discounts,
-  // SubmitRow,
   SendButton,
   ActionButtons,
-  // SubmitButton,
   TaxRow,
   FinalTotal,
   FooterRow
 } from "../../style/create-style";
-// import styled from "styled-components";
 
 const CreateInvoice = () => {
   const [logo, setLogo] = useState();
-
+  const [invoice, setinvoice] = useState("");
   const [billFrom, setBillFrom] = useState("");
   const [billTo, setBillTo] = useState("");
-
-  const [invoice, setinvoice] = useState("");
-  const [invoiceDate, setinvoiceDate] = useState(new Date());
-  const [terms, setTerms] = useState("");
+  const [voucherNumber, setVoucherNumber] = useState("");
+  const [transactionDate, setTransactionDate] = useState("");
   const [dueDate, setDueDate] = useState(new Date());
-  const [dueBanalce, setdueBanalce] = useState(0);
+  const [createdAt, setCreatedAt] = useState(new Date());
 
   const [items, setItems] = useState([
-    {
-      name: "",
-      quantity: 0,
-      rate: 0,
-      amount: 0
-    }
+    { name: "", quantity: 0, rate: 0, amount: 0 }
   ]);
-
   const [subTotal, updateSubTotal] = useState(0);
 
   const [discount, updateDiscount] = useState({
     type: "amount",
     discountAmount: 0
   });
-
   const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0 }]);
   const [totalTax, updateTotalTax] = useState(0);
 
@@ -70,68 +55,50 @@ const CreateInvoice = () => {
     content: undefined
   });
 
-  const [submit, setSubmit] = useState(false);
-
   const [totoal, updateTotal] = useState(0);
 
-  function base64toBlob(base64Data, contentType) {
-    contentType = contentType || "";
-    var sliceSize = 1024;
-    var byteCharacters = atob(base64Data);
-    var bytesLength = byteCharacters.length;
-    var slicesCount = Math.ceil(bytesLength / sliceSize);
-    var byteArrays = new Array(slicesCount);
+  const handleSave = e => {
+    e.preventDefault();
 
-    for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-      var begin = sliceIndex * sliceSize;
-      var end = Math.min(begin + sliceSize, bytesLength);
+    localStorage.removeItem("InvoiceData");
 
-      var bytes = new Array(end - begin);
-      for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-        bytes[i] = byteCharacters[offset].charCodeAt(0);
-      }
-      byteArrays[sliceIndex] = new Uint8Array(bytes);
-    }
-    return new Blob(byteArrays, { type: contentType });
-  }
+    const finalData = {
+      logo: logo,
+      invoice_no: invoice,
+      from: billFrom,
+      to: billTo,
+      voucher_no: voucherNumber,
+      transaction_date: transactionDate,
+      due_date: dueDate,
+      createdAt: createdAt,
+      items: items,
+      sub_totoal: subTotal,
+      discount: discount,
+      taxes: taxes,
+      total: totoal,
+      footer_data: footerData
+    };
 
-  const handleSubmit = () => {
-    console.log("Base64: ", logo);
-    // console.log( base64toBlob(logo, "jpg/png") );
-
-    localStorage.clear();
-    localStorage.setItem("billFrom", billFrom);
-    localStorage.setItem("billTo", billTo);
-    localStorage.setItem("invoice_no", invoice);
-    localStorage.setItem("invoiceDate", invoiceDate);
-    localStorage.setItem("dueDate", dueDate);
-    localStorage.setItem("terms", terms);
-    localStorage.setItem("dueBanalce", dueBanalce);
-    localStorage.setItem("items", items);
-    localStorage.setItem("logo", logo);
-
-    setSubmit(true);
+    localStorage.setItem("InvoiceData", JSON.stringify(finalData));
   };
 
   const onDrop = logo => {
-    console.log("Logo Object", logo);
     let file = logo[0];
 
-    // const objectURL = window.URL.createObjectURL(file);
-    // setLogo(objectURL);
-
     let reader = new FileReader();
-    reader.readAsDataURL(file);
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+
     reader.onloadend = () => {
-      setLogo(reader.result);
+      setLogo(file ? reader.result : logo);
     };
   };
 
   const handleRemoveItem = (e, i) => {
     e.preventDefault();
-
-    let newItems = items.filter((item, index) => i !== index);
-
+    const newItems = items.filter((_, index) => i !== index);
     setItems(newItems);
   };
 
@@ -151,22 +118,23 @@ const CreateInvoice = () => {
   const handleItemChange = (e, index) => {
     const newItems = [...items];
 
-    switch(e.target.name) {
-      case 'rate':
+    switch (e.target.name) {
+      case "rate":
         newItems[index].rate = e.target.value;
         break;
 
-      case 'quantity':
+      case "quantity":
         newItems[index].quantity = e.target.value;
         break;
 
-      case 'name':
+      case "name":
         newItems[index].name = e.target.value;
         break;
     }
 
-    if(e.target.name == 'rate' || e.target.name == 'quantity') {
-      newItems[index].amount = parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
+    if (e.target.name == "rate" || e.target.name == "quantity") {
+      newItems[index].amount =
+        parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
     }
 
     setItems(newItems);
@@ -203,7 +171,7 @@ const CreateInvoice = () => {
     }
 
     if (discount.type === "percentage") {
-      let discountInPercentage = subTotal * (discount.discountAmount / 100);
+      const discountInPercentage = subTotal * (discount.discountAmount / 100);
       newSubTotal = subTotal - discountInPercentage;
     }
 
@@ -260,113 +228,121 @@ const CreateInvoice = () => {
   };
 
   return (
-      <Wrapper>
-        {/* Header Part */}
-        <MainHeader>
-          <Container>
-            <Row className={"row"}>
-              <ContentLeft>
-                <InnerRow>
-                  <ImageUploader
-                      withIcon={false}
-                      withPreview={true}
-                      singleImage={true}
-                      buttonText={""}
-                      withLabel={true}
-                      label={"Drop Your Logo"}
-                      onChange={onDrop}
-                      imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-                      maxFileSize={5242880}
+    <Wrapper>
+      {/* Header Part */}
+      <MainHeader>
+        <Container>
+          <Row className={"row"}>
+            <ContentLeft>
+              <InnerRow>
+                <ImageUploader
+                  withIcon={false}
+                  withPreview={true}
+                  singleImage={true}
+                  buttonText={""}
+                  withLabel={true}
+                  label={"Drop Your Logo"}
+                  onChange={onDrop}
+                  imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                  maxFileSize={5242880}
+                />
+                <InputWrapper className={"invoice"}>
+                  <InputLabel>Invoice No</InputLabel>
+                  <InputField
+                    type="number"
+                    name="invoice-id"
+                    placeholder="Add Invoice No"
+                    value={invoice}
+                    onChange={e => setinvoice(e.target.value)}
                   />
-                  <InputWrapper className={"invoice"}>
-                    <InputLabel>Invoice No</InputLabel>
-                    <InputField
-                        type="number"
-                        name="invoice-id"
-                        placeholder="Add Invoice No"
-                        value={invoice}
-                        onChange={e => setinvoice(e.target.value)}
-                    />
-                  </InputWrapper>
-                </InnerRow>
-              </ContentLeft>
+                </InputWrapper>
+              </InnerRow>
+            </ContentLeft>
 
-              <ContentRight className={"header_buttons"}>
-                <SendButton>Send Invoice</SendButton>
-                <ActionButtons>
-                  <button>Preview</button>
-                  <button onClick={e => handleSubmit()}>Save</button>
-                  <button>Download</button>
-                </ActionButtons>
-              </ContentRight>
-            </Row>
-          </Container>
-        </MainHeader>
+            <ContentRight className={"header_buttons"}>
+              <SendButton>Send Invoice</SendButton>
+              <ActionButtons>
+                <button>Preview</button>
+                <button onClick={e => handleSave(e)}>Save</button>
+                <button>Download</button>
+              </ActionButtons>
+            </ContentRight>
+          </Row>
+        </Container>
+      </MainHeader>
 
-        {/* Body Part */}
-        <MainBody>
-          <Container>
-            <Row>
-              <ContentLeft>
-                <InnerRow>
-                  <FormLeft>
-                    <InputWrapper>
-                      <InputLabel>From</InputLabel>
-                      <TextareaField
-                          name="bill_to"
-                          onChange={e => setBillFrom(e.target.value)}
-                          placeholder="Name: X Company"
-                          value={billFrom}
-                      ></TextareaField>
-                    </InputWrapper>
-                  </FormLeft>
-
-                  <FormRight>
-                    <InputWrapper>
-                      <InputLabel>To</InputLabel>
-                      <TextareaField
-                          name="bill_from"
-                          onChange={e => setBillTo(e.target.value)}
-                          placeholder="Name: Y Company"
-                          value={billTo}
-                      ></TextareaField>
-                    </InputWrapper>
-                  </FormRight>
-                </InnerRow>
-
-                <InnerRow className={"infoform"}>
+      {/* Body Part */}
+      <MainBody>
+        <Container>
+          <Row>
+            <ContentLeft>
+              <InnerRow>
+                <FormLeft>
                   <InputWrapper>
-                    <InputLabel>Voucher No:</InputLabel>
-                    <InputField type="text" />
+                    <InputLabel>From</InputLabel>
+                    <TextareaField
+                      name="bill_to"
+                      onChange={e => setBillFrom(e.target.value)}
+                      placeholder="Name: X Company"
+                      value={billFrom}
+                    ></TextareaField>
                   </InputWrapper>
+                </FormLeft>
 
+                <FormRight>
                   <InputWrapper>
-                    <InputLabel>Transaction Date:</InputLabel>
-                    <InputField type="text" />
+                    <InputLabel>To</InputLabel>
+                    <TextareaField
+                      name="bill_from"
+                      onChange={e => setBillTo(e.target.value)}
+                      placeholder="Name: Y Company"
+                      value={billTo}
+                    ></TextareaField>
                   </InputWrapper>
+                </FormRight>
+              </InnerRow>
 
-                  <InputWrapper>
-                    <InputLabel>Due Date:</InputLabel>
-                    <DatePicker
-                        showPopperArrow={false}
-                        selected={dueDate}
-                        onChange={date => setDueDate(date)}
-                    />
-                  </InputWrapper>
+              <InnerRow className={"infoform"}>
+                <InputWrapper>
+                  <InputLabel>Voucher No:</InputLabel>
+                  <InputField
+                    type="text"
+                    value={voucherNumber}
+                    onChange={e => setVoucherNumber(e.target.value)}
+                  />
+                </InputWrapper>
 
-                  <InputWrapper>
-                    <InputLabel>Created At:</InputLabel>
-                    <DatePicker
-                        showPopperArrow={false}
-                        selected={invoiceDate}
-                        onChange={date => setinvoiceDate(date)}
-                    />
-                  </InputWrapper>
-                </InnerRow>
+                <InputWrapper>
+                  <InputLabel>Transaction Date:</InputLabel>
+                  <DatePicker
+                    showPopperArrow={false}
+                    selected={transactionDate}
+                    onChange={date => setTransactionDate(date)}
+                  />
+                </InputWrapper>
 
-                <InnerRow>
-                  <TableMain>
-                    <thead>
+                <InputWrapper>
+                  <InputLabel>Due Date:</InputLabel>
+                  <DatePicker
+                    showPopperArrow={false}
+                    selected={dueDate}
+                    onChange={date => setDueDate(date)}
+                  />
+                </InputWrapper>
+
+                <InputWrapper>
+                  <InputLabel>Created At:</InputLabel>
+                  <DatePicker
+                    showPopperArrow={false}
+                    selected={createdAt}
+                    onChange={date => setCreatedAt(date)}
+                  />
+                </InputWrapper>
+              </InnerRow>
+
+              <InnerRow>
+                <TableMain>
+                  <thead>
                     <tr>
                       <th>Serial No</th>
                       <th>Item Name</th>
@@ -374,48 +350,48 @@ const CreateInvoice = () => {
                       <th>Quantity</th>
                       <th>Amount</th>
                     </tr>
-                    </thead>
+                  </thead>
 
-                    <tbody>
+                  <tbody>
                     {items.map((item, i) => {
                       return (
-                          <tr key={i}>
-                            <td>{i + 1}</td>
+                        <tr key={i}>
+                          <td>{i + 1}</td>
 
-                            <td>
-                              <InputField
-                                  name="name"
-                                  type="text"
-                                  placeholder="Write Item Name"
-                                  onChange={e => handleItemChange(e, i)}
-                              />
-                            </td>
+                          <td>
+                            <InputField
+                              name="name"
+                              type="text"
+                              placeholder="Write Item Name"
+                              onChange={e => handleItemChange(e, i)}
+                            />
+                          </td>
 
-                            <td>
-                              <InputField
-                                  name="quantity"
-                                  type="text"
-                                  placeholder="0"
-                                  onChange={e => handleItemChange(e, i)}
-                              />
-                            </td>
+                          <td>
+                            <InputField
+                              name="quantity"
+                              type="text"
+                              placeholder="0"
+                              onChange={e => handleItemChange(e, i)}
+                            />
+                          </td>
 
-                            <td>
-                              <InputField
-                                  name="rate"
-                                  type="text"
-                                  placeholder="1"
-                                  onChange={e => handleItemChange(e, i)}
-                              />
-                            </td>
+                          <td>
+                            <InputField
+                              name="rate"
+                              type="text"
+                              placeholder="1"
+                              onChange={e => handleItemChange(e, i)}
+                            />
+                          </td>
 
-                            <td>
-                              <span> {item.amount} </span>
-                              <button onClick={e => handleRemoveItem(e, i)}>
-                                X
-                              </button>
-                            </td>
-                          </tr>
+                          <td>
+                            <span>{item.amount}</span>
+                            <button onClick={e => handleRemoveItem(e, i)}>
+                              X
+                            </button>
+                          </td>
+                        </tr>
                       );
                     })}
 
@@ -443,48 +419,51 @@ const CreateInvoice = () => {
                             <option value="percentage">Percentage</option>
                           </select>
                           <InputField
-                              type="text"
-                              onChange={e => handleDiscount(e)}
+                            type="text"
+                            onChange={e => handleDiscount(e)}
                           />
                         </Discounts>
                       </td>
                     </tr>
 
-
                     {taxes.map((tax, index) => {
                       return (
-                          <React.Fragment key={index}>
-                            <tr className="calculation">
-                              <td className={"blank"} colSpan="3"></td>
-                              <td className={"tax"} colSpan="2">
-                                <TaxRow>
-                                  <InputField
-                                      className="tax_type"
-                                      placeholder="Tax Type"
-                                      type="text"
-                                      name="type"
-                                      placeholder="Tax Type"
-                                      onChange={e => handleTaxChange(e, index)}
-                                      value={tax.type}
-                                  />
+                        <React.Fragment key={index}>
+                          <tr className="calculation">
+                            <td className={"blank"} colSpan="3"></td>
+                            <td className={"tax"} colSpan="2">
+                              <TaxRow>
+                                <InputField
+                                  className="tax_type"
+                                  placeholder="Tax Type"
+                                  type="text"
+                                  name="type"
+                                  placeholder="Tax Type"
+                                  onChange={e => handleTaxChange(e, index)}
+                                  value={tax.type}
+                                />
 
-                                  <InputField
-                                      type="number"
-                                      name="tax_percentage"
-                                      placeholder="Tax Percentage"
-                                      onChange={e => handleTaxChange(e, index)}
-                                      value={tax.tax_percentage > 0 ? tax.tax_percentage : ""}
-                                      className="tax_amount"
-                                  />
-                                  <button
-                                      onClick={e => handleRemoveTax(e, index)}
-                                  >
-                                    X
-                                  </button>
-                                </TaxRow>
-                              </td>
-                            </tr>
-                          </React.Fragment>
+                                <InputField
+                                  type="number"
+                                  name="tax_percentage"
+                                  placeholder="Tax Percentage"
+                                  onChange={e => handleTaxChange(e, index)}
+                                  value={
+                                    tax.tax_percentage > 0
+                                      ? tax.tax_percentage
+                                      : ""
+                                  }
+                                  className="tax_amount"
+                                />
+                                <button
+                                  onClick={e => handleRemoveTax(e, index)}
+                                >
+                                  X
+                                </button>
+                              </TaxRow>
+                            </td>
+                          </tr>
+                        </React.Fragment>
                       );
                     })}
 
@@ -506,45 +485,44 @@ const CreateInvoice = () => {
                         </FinalTotal>
                       </td>
                     </tr>
-                    </tbody>
-                  </TableMain>
-                </InnerRow>
+                  </tbody>
+                </TableMain>
+              </InnerRow>
 
-                <AdditionalRow>
-                  <InputWrapper>
-                    <InputLabel>Additional Info</InputLabel>
-                    <InputField
-                        name="footer_title"
-                        onChange={e => handleFooter(e)}
-                        placeholder="Title"
-                    />
-
-                    <TextareaField
-                        name="bill_to"
-                        onChange={e => setBillFrom(e.target.value)}
-                        placeholder="Additional Info"
-                        onChange={e => handleFooter(e)}
-                    ></TextareaField>
-                  </InputWrapper>
-                </AdditionalRow>
-
-                <FooterRow></FooterRow>
-
-              </ContentLeft>
-
-              <ContentRight className={"bodySideControls"}>
+              <AdditionalRow>
                 <InputWrapper>
-                  <InputLabel>Currency</InputLabel>
-                  <select onChange={e => handleDiscountType(e)}>
-                    <option value="amount">BDT</option>
-                    <option value="percentage">USD</option>
-                  </select>
+                  <InputLabel>Additional Info</InputLabel>
+                  <InputField
+                    name="title"
+                    onChange={e => handleFooter(e)}
+                    placeholder="Title"
+                  />
+
+                  <TextareaField
+                    name="content"
+                    onChange={e => setBillFrom(e.target.value)}
+                    placeholder="Additional Info"
+                    onChange={e => handleFooter(e)}
+                  ></TextareaField>
                 </InputWrapper>
-              </ContentRight>
-            </Row>
-          </Container>
-        </MainBody>
-      </Wrapper>
+              </AdditionalRow>
+
+              <FooterRow></FooterRow>
+            </ContentLeft>
+
+            <ContentRight className={"bodySideControls"}>
+              <InputWrapper>
+                <InputLabel>Currency</InputLabel>
+                <select onChange={e => handleDiscountType(e)}>
+                  <option value="amount">BDT</option>
+                  <option value="percentage">USD</option>
+                </select>
+              </InputWrapper>
+            </ContentRight>
+          </Row>
+        </Container>
+      </MainBody>
+    </Wrapper>
   );
 };
 
