@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
     maxHeight: "50px",
     margin: "20px"
   },
-<<<<<<< HEAD
 
   ColumnFour: {
     width: "22%",
@@ -154,25 +153,6 @@ const styles = StyleSheet.create({
     marginRight: "30px",
     marginBottom: "5px",
     alignItems: "flex-end"
-=======
-  FromDiv: {
-    height: "100%",
-    textAlign: "left",
-    width: "47%",
-    marginRight: "3%",
-  },
-
-  toDiv: {
-    backgroundColor: "#eff2fa",
-    minHeight: "10px",
-    padding: "10px",
-    marginTop: "10px",
-    boxSizing: "border-box",
-  },
-
-  Row4: {
-    width: "25%"
->>>>>>> 4085ab33680dd61d2793aa89ac93ef2181c5c200
   },
 
   InvoiceTax: {
@@ -211,56 +191,6 @@ const styles = StyleSheet.create({
   }
 });
 
-<<<<<<< HEAD
-=======
-const invoiceValues = {
-  logo: "https://localhost/images/logo",
-  invoice_no: "fdalfhahfdafddf",
-  from:
-    "name : X Company \naddress : X Company city : X Company country : X Company",
-  to:
-    "name : X Company address : X Company city : X Company country : X Company",
-  voucher_no: "121354",
-  transaction_date: "23-02-2020",
-  due_date: "23-02-2020",
-  createdAt: "23-02-2020",
-  items: [
-    {
-      serial_number: "01",
-      product: "NX",
-      unit_price: "$5",
-      quantity: "2",
-      Amount: "$10"
-    },
-    {
-      serial_number: "01",
-      product: "NX",
-      unit_price: "$5",
-      quantity: "2",
-      Amount: "$10"
-    },
-    {
-      serial_number: "01",
-      product: "NX",
-      unit_price: "$5",
-      quantity: "2",
-      Amount: "$10"
-    }
-  ],
-  sub_totoal: "30",
-  discount: {
-    type: "amount",
-    amount: "10"
-  },
-  taxes: [".3", ".5", ".2"],
-  total: "400",
-  footer_data: {
-    title: "Terms and Conditions",
-    content: "blah blah blah"
-  }
-};
-
->>>>>>> 4085ab33680dd61d2793aa89ac93ef2181c5c200
 // Create Document Component
 const PDFDisplay = () => (
   <PDFViewer
