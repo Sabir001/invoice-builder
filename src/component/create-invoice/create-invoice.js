@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ImageUploader from "react-images-upload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import CurrencyData from "../currency/currency";
+import Select from "react-select";
 
 import {
   Wrapper,
@@ -57,6 +59,8 @@ const CreateInvoice = () => {
 
   const [totoal, updateTotal] = useState(0);
 
+  const [currency, setCurrency] = useState("USD");
+
   const handleSave = e => {
     e.preventDefault();
 
@@ -76,7 +80,8 @@ const CreateInvoice = () => {
       discount: discount,
       taxes: taxes,
       total: totoal,
-      footer_data: footerData
+      footer_data: footerData,
+      currency: currency
     };
 
     localStorage.setItem("InvoiceData", JSON.stringify(finalData));
@@ -151,6 +156,11 @@ const CreateInvoice = () => {
   // Handle Discount
   const handleDiscountType = e => {
     updateDiscount({ ...discount, ...{ type: e.target.value } });
+  };
+
+  // Handle Currency
+  const handleCurrency = selectedOption => {
+    setCurrency(selectedOption.value);
   };
 
   const handleDiscount = e => {
@@ -481,7 +491,10 @@ const CreateInvoice = () => {
                       <td className={"summary"} colSpan="2">
                         <FinalTotal>
                           <InputLabel>Total</InputLabel>
-                          <InputLabel>${totoal}</InputLabel>
+                          <InputLabel>
+                            {currency} &nbsp;
+                            {totoal}
+                          </InputLabel>
                         </FinalTotal>
                       </td>
                     </tr>
@@ -513,10 +526,26 @@ const CreateInvoice = () => {
             <ContentRight className={"bodySideControls"}>
               <InputWrapper>
                 <InputLabel>Currency</InputLabel>
-                <select onChange={e => handleDiscountType(e)}>
-                  <option value="amount">BDT</option>
-                  <option value="percentage">USD</option>
-                </select>
+                <Select
+                  value={currency}
+                  onChange={e => handleCurrency(e)}
+                  options={CurrencyData.map(item => {
+                    return {
+                      value: item.cc,
+                      label: item.name
+                    };
+                  })}
+                />
+                {/* <select
+                  defaultValue={currency}
+                  onChange={e => handleCurrency(e)}
+                >
+                  {CurrencyData.map((item, i) => (
+                    <option key={i} value={item.cc}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select> */}
               </InputWrapper>
             </ContentRight>
           </Row>
