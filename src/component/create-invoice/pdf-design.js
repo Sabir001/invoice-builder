@@ -191,6 +191,10 @@ const styles = StyleSheet.create({
   }
 });
 
+const data = localStorage.getItem("InvoiceData");
+const invoiceData = JSON.parse(data);
+const itemSerialNumber = "100";
+
 // Create Document Component
 const PDFDisplay = () => (
   <PDFViewer
@@ -203,57 +207,56 @@ const PDFDisplay = () => (
     }}
   >
     <Document>
+      {console.log("invoiceData", invoiceData.items)}
       <Page size="A4" style={styles.page}>
         <View style={styles.Mainheader}>
           <View style={styles.ImageDiv}>
             <Image
               style={styles.Image}
-              src="https://de-professionals.nl/wp-content/uploads/2017/10/logo-dummy.png"
+              src={invoiceData.logo}
             />
           </View>
 
           <View style={styles.Invoice}>
-            <Text>Invoice No: #0000000000</Text>
+            <Text>Invoice No: {invoiceData.invoice_no}</Text>
           </View>
         </View>
 
         <View style={styles.BodyHead}>
           <View style={styles.AddressBlock}>
             <Text style={styles.Title}>From</Text>
-            <Text style={styles.AddressValue}>{invoiceValues.from}</Text>
+            <Text style={styles.AddressValue}>{invoiceData.from}</Text>
           </View>
 
           <View style={styles.AddressBlock}>
             <Text style={styles.Title}>TO</Text>
-            <Text style={styles.AddressValue}>{invoiceValues.to}</Text>
+            <Text style={styles.AddressValue}>{invoiceData.to}</Text>
           </View>
         </View>
 
         <View style={styles.VoucherInfo}>
           <View style={styles.ColumnFour}>
             <Text style={styles.Title}>Voucher No</Text>
-            <Text style={styles.AddressValue}>{invoiceValues.voucher_no}</Text>
+            <Text style={styles.AddressValue}>{invoiceData.voucher_no}</Text>
           </View>
 
           <View style={styles.ColumnFour}>
             <Text style={styles.Title}>Transaction Date</Text>
-            <Text style={styles.AddressValue}>
-              {invoiceValues.transaction_date}
-            </Text>
+            <Text style={styles.AddressValue}>{invoiceData.transaction_date}</Text>
           </View>
           <View style={styles.ColumnFour}>
             <Text style={styles.Title}>Due Date</Text>
-            <Text style={styles.AddressValue}>{invoiceValues.due_date}</Text>
+            <Text style={styles.AddressValue}>{invoiceData.due_date}</Text>
           </View>
 
           <View style={styles.ColumnFour}>
             <Text style={styles.Title}>Created Date</Text>
-            <Text style={styles.AddressValue}>{invoiceValues.createdAt}</Text>
+            <Text style={styles.AddressValue}>{invoiceData.createdAt}</Text>
           </View>
         </View>
 
         <View style={styles.TableView}>
-          <Table data={invoiceValues.items}>
+          <Table data={invoiceData.items}>
             <TableHeader>
               <TableCell style={styles.TableCell}>No</TableCell>
               <TableCell style={styles.TableCell}>Item Name</TableCell>
@@ -264,23 +267,23 @@ const PDFDisplay = () => (
             <TableBody>
               <DataTableCell
                 style={styles.TableCell}
-                getContent={r => r.serial_number}
+                getContent={(r) => r.serial_number}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={r => r.product}
+                getContent={(r) => r.name}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={r => r.unit_price}
+                getContent={(r) => r.rate}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={r => r.quantity}
+                getContent={(r) => r.quantity}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={r => r.Amount}
+                getContent={(r) => r.amount}
               />
             </TableBody>
           </Table>
@@ -288,21 +291,21 @@ const PDFDisplay = () => (
 
         <View style={styles.InvoiceSummary}>
           <Text style={styles.Title}>
-            Sub Total: {invoiceValues.sub_totoal}
+            Sub Total: {invoiceData.createdAt}
           </Text>
         </View>
         <View style={styles.InvoiceSummary}>
           <Text style={styles.Title}>
             Discount: {invoiceValues.discount.type}:{" "}
-            {invoiceValues.discount.amount}
+            {invoiceData.createdAt}
           </Text>
         </View>
 
         <View style={styles.InvoiceTax}>
-          <Table data={invoiceValues.taxes}>
+          <Table data={invoiceData.taxes}>
             <TableBody style={styles.TaxTableBody}>
               <TableCell style={styles.TaxTableCell}>Taxes</TableCell>
-              <DataTableCell style={styles.TaxTableCell} getContent={r => r} />
+              <DataTableCell style={styles.TaxTableCell} getContent={r => r.total} />
             </TableBody>
           </Table>
         </View>

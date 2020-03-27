@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import ImageUploader from "react-images-upload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import CurrencyData from "../currency/currency";
+import Select from "react-select";
+import DateLogo from "../../assets/image/datepicker-icon.png";
 
 import {
   Wrapper,
@@ -34,12 +38,13 @@ const CreateInvoice = () => {
   const [billFrom, setBillFrom] = useState("");
   const [billTo, setBillTo] = useState("");
   const [voucherNumber, setVoucherNumber] = useState("");
-  const [transactionDate, setTransactionDate] = useState("");
+  const [transactionDate, setTransactionDate] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
   const [createdAt, setCreatedAt] = useState(new Date());
+  const history = useHistory();
 
   const [items, setItems] = useState([
-    { name: "", quantity: 0, rate: 0, amount: 0 }
+    { serial_number: 1, name: "", quantity: 1, rate: 0, amount: 0 }
   ]);
   const [subTotal, updateSubTotal] = useState(0);
 
@@ -47,7 +52,7 @@ const CreateInvoice = () => {
     type: "amount",
     discountAmount: 0
   });
-  const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0 }]);
+  const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0, total: 0 }]);
   const [totalTax, updateTotalTax] = useState(0);
 
   const [footerData, updateFooterData] = useState({
@@ -57,11 +62,20 @@ const CreateInvoice = () => {
 
   const [totoal, updateTotal] = useState(0);
 
+  const [currency, setCurrency] = useState("USD");
+
+  // Handle Currency
+  const handleCurrency = selectedOption => {
+    setCurrency(selectedOption.value);
+  };
+
+  const handlePreview = e => {
+    handleSave();
+    window.open("/pdf");
+  };
+
   const handleSave = e => {
-    e.preventDefault();
-
     localStorage.removeItem("InvoiceData");
-
     const finalData = {
       logo: logo,
       invoice_no: invoice,
@@ -75,6 +89,7 @@ const CreateInvoice = () => {
       sub_totoal: subTotal,
       discount: discount,
       taxes: taxes,
+      total_tax: totalTax,
       total: totoal,
       footer_data: footerData
     };
@@ -107,7 +122,7 @@ const CreateInvoice = () => {
 
     const newItem = {
       name: "",
-      quantity: 0,
+      quantity: 1,
       rate: 0,
       amount: 0
     };
@@ -118,7 +133,9 @@ const CreateInvoice = () => {
   const handleItemChange = (e, index) => {
     const newItems = [...items];
 
-    switch (e.target.name) {
+    newItems[index].serial_number = index+1;
+
+    switch (e.target.name) {      
       case "rate":
         newItems[index].rate = e.target.value;
         break;
@@ -196,18 +213,22 @@ const CreateInvoice = () => {
   };
 
   const handleTaxChange = (e, index) => {
-    const newTaxes = [...taxes];
-    newTaxes[index] = {
+    const taxData = [...taxes];
+    taxData[index] = {
       ...taxes[index],
       [e.target.name]: e.target.value
     };
 
-    updateTax(newTaxes);
+    if ( e.target.name == "tax_percentage" ) {
+      taxData[index].total = (subTotal * taxData[index].tax_percentage) / 100;
+    }
+
+    updateTax(taxData);
   };
 
   useEffect(() => {
     let totalTax = taxes.reduce((prev, next) => {
-      return (prev += parseInt(next.tax_percentage));
+      return (prev += parseInt(next.total));
     }, 0);
 
     updateTotalTax(totalTax);
@@ -215,7 +236,7 @@ const CreateInvoice = () => {
 
   // calculating total
   useEffect(() => {
-    let updatedTotalWithTax = subTotal + (subTotal / 100) * totalTax;
+    let updatedTotalWithTax = (subTotal + totalTax) - discount.discountAmount;
     updateTotal(updatedTotalWithTax);
   }, [subTotal, totalTax]);
 
@@ -228,7 +249,7 @@ const CreateInvoice = () => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper className="wrapper">
       {/* Header Part */}
       <MainHeader>
         <Container>
@@ -262,7 +283,7 @@ const CreateInvoice = () => {
             <ContentRight className={"header_buttons"}>
               <SendButton>Send Invoice</SendButton>
               <ActionButtons>
-                <button>Preview</button>
+                <button onClick={e => handlePreview(e)}>Preview</button>
                 <button onClick={e => handleSave(e)}>Save</button>
                 <button>Download</button>
               </ActionButtons>
@@ -307,9 +328,21 @@ const CreateInvoice = () => {
                   <InputLabel>Voucher No:</InputLabel>
                   <InputField
                     type="text"
+                    placeholder="Voucher No"
                     value={voucherNumber}
                     onChange={e => setVoucherNumber(e.target.value)}
                   />
+                </InputWrapper>
+
+                <InputWrapper>
+                  <InputLabel>Created Date:</InputLabel>
+                  <DatePicker
+                    showPopperArrow={true}
+                    selected={createdAt}
+                    dateFormat="mm/dd/yyyy"
+                    onChange={date => setCreatedAt(date)}
+                  />
+                  <img className={"dateicon"} src={DateLogo} />
                 </InputWrapper>
 
                 <InputWrapper>
@@ -319,6 +352,7 @@ const CreateInvoice = () => {
                     selected={transactionDate}
                     onChange={date => setTransactionDate(date)}
                   />
+                  <img className={"dateicon"} src={DateLogo} />
                 </InputWrapper>
 
                 <InputWrapper>
@@ -328,15 +362,7 @@ const CreateInvoice = () => {
                     selected={dueDate}
                     onChange={date => setDueDate(date)}
                   />
-                </InputWrapper>
-
-                <InputWrapper>
-                  <InputLabel>Created At:</InputLabel>
-                  <DatePicker
-                    showPopperArrow={false}
-                    selected={createdAt}
-                    onChange={date => setCreatedAt(date)}
-                  />
+                  <img className={"dateicon"} src={DateLogo} />
                 </InputWrapper>
               </InnerRow>
 
@@ -369,7 +395,7 @@ const CreateInvoice = () => {
 
                           <td>
                             <InputField
-                              name="quantity"
+                              name="rate"
                               type="text"
                               placeholder="0"
                               onChange={e => handleItemChange(e, i)}
@@ -378,7 +404,7 @@ const CreateInvoice = () => {
 
                           <td>
                             <InputField
-                              name="rate"
+                              name="quantity"
                               type="text"
                               placeholder="1"
                               onChange={e => handleItemChange(e, i)}
@@ -386,7 +412,9 @@ const CreateInvoice = () => {
                           </td>
 
                           <td>
-                            <span>{item.amount}</span>
+                            <span>
+                              {currency} {item.amount}
+                            </span>
                             <button onClick={e => handleRemoveItem(e, i)}>
                               X
                             </button>
@@ -405,40 +433,47 @@ const CreateInvoice = () => {
                         <div>Sub Total</div>
                       </td>
                       <td className={"subtotal_amount"}>
-                        <div>{subTotal}</div>
+                        <div>
+                          {currency} {subTotal}
+                        </div>
                       </td>
                     </tr>
 
                     <tr className="calculation">
                       <td className={"blank"} colSpan="3"></td>
-                      <td className={"discount"} colSpan="2">
+                      <td className={"discount"}>
                         <Discounts>
                           <InputLabel>Discount</InputLabel>
                           <select onChange={e => handleDiscountType(e)}>
-                            <option value="amount">Amount</option>
+                            <option value="amount">Fixed</option>
                             <option value="percentage">Percentage</option>
                           </select>
                           <InputField
                             type="text"
+                            placeholder={discount.discountAmount}
                             onChange={e => handleDiscount(e)}
                           />
                         </Discounts>
+                      </td>
+                      <td>
+                        <InputLabel className="discount_amount">
+                          {currency} {discount.discountAmount}
+                        </InputLabel>
                       </td>
                     </tr>
 
                     {taxes.map((tax, index) => {
                       return (
                         <React.Fragment key={index}>
-                          <tr className="calculation">
+                          <tr className="tax calculation">
                             <td className={"blank"} colSpan="3"></td>
-                            <td className={"tax"} colSpan="2">
+                            <td className={"tax"}>
                               <TaxRow>
                                 <InputField
                                   className="tax_type"
-                                  placeholder="Tax Type"
+                                  placeholder="Name of The Tax"
                                   type="text"
                                   name="type"
-                                  placeholder="Tax Type"
                                   onChange={e => handleTaxChange(e, index)}
                                   value={tax.type}
                                 />
@@ -446,7 +481,7 @@ const CreateInvoice = () => {
                                 <InputField
                                   type="number"
                                   name="tax_percentage"
-                                  placeholder="Tax Percentage"
+                                  placeholder="Amount (%)"
                                   onChange={e => handleTaxChange(e, index)}
                                   value={
                                     tax.tax_percentage > 0
@@ -455,19 +490,24 @@ const CreateInvoice = () => {
                                   }
                                   className="tax_amount"
                                 />
+                              </TaxRow>
+                            </td>
+                            <td>
+                              <InputLabel className="tax_amount">
+                                {currency} {tax.total}                                
                                 <button
                                   onClick={e => handleRemoveTax(e, index)}
                                 >
                                   X
                                 </button>
-                              </TaxRow>
+                              </InputLabel>
                             </td>
                           </tr>
                         </React.Fragment>
                       );
                     })}
 
-                    <tr className="calculation">
+                    <tr className="add_tax_calc calculation">
                       <td className={"blank"} colSpan="3"></td>
                       <td className={"add_tax"} colSpan="2">
                         <button onClick={e => handleMultipleTaxField(e)}>
@@ -476,12 +516,14 @@ const CreateInvoice = () => {
                       </td>
                     </tr>
 
-                    <tr className="calculation">
+                    <tr className="net_total calculation">
                       <td className={"blank"} colSpan="3"></td>
                       <td className={"summary"} colSpan="2">
                         <FinalTotal>
                           <InputLabel>Total</InputLabel>
-                          <InputLabel>${totoal}</InputLabel>
+                          <InputLabel>
+                            {currency} {totoal}
+                          </InputLabel>
                         </FinalTotal>
                       </td>
                     </tr>
@@ -513,10 +555,17 @@ const CreateInvoice = () => {
             <ContentRight className={"bodySideControls"}>
               <InputWrapper>
                 <InputLabel>Currency</InputLabel>
-                <select onChange={e => handleDiscountType(e)}>
-                  <option value="amount">BDT</option>
-                  <option value="percentage">USD</option>
-                </select>
+                <Select
+                  value={currency}
+                  placeholder={currency}
+                  onChange={e => handleCurrency(e)}
+                  options={CurrencyData.map(item => {
+                    return {
+                      value: item.cc,
+                      label: item.name
+                    };
+                  })}
+                />
               </InputWrapper>
             </ContentRight>
           </Row>
