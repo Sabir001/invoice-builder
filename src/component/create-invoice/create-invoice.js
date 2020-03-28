@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import ImageUploader from "react-images-upload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 import CurrencyData from "../currency/currency";
 import Select from "react-select";
 import DateLogo from "../../assets/image/datepicker-icon.png";
@@ -45,35 +46,43 @@ const CreateInvoice = () => {
 
   const [items, setItems] = useState([
     { serial_number: 1, name: "", quantity: 1, rate: 0, amount: 0 }
-  ]);
-  const [subTotal, updateSubTotal] = useState(0);
+  ]);  
+
+  const [currency, setCurrency] = useState("USD"); //Currency
+
+  const [subTotal, updateSubTotal] = useState(0); //Sub Total
 
   const [discount, updateDiscount] = useState({
-    type: "amount",
-    discountAmount: 0
+    type: "fixed",
+    discountAmount: 0,
+    discountTotal: 0
   });
-  const [taxes, updateTax] = useState([{ type: undefined, tax_percentage: 0, total: 0 }]);
-  const [totalTax, updateTotalTax] = useState(0);
+  const [subTotalAfterDiscount, updateSubTotalAfterDiscount] = useState(0); //Sub Total After Discount
+
+  const [taxes, updateTax] = useState([
+    { type: undefined, tax_percentage: 0, total: 0 }
+  ]);
+  const [totalTax, updateTotalTax] = useState(0); //Total Tax
+
+  const [totoal, updateTotal] = useState(0); //Total Amount #Final
 
   const [footerData, updateFooterData] = useState({
     title: undefined,
     content: undefined
   });
 
-  const [totoal, updateTotal] = useState(0);
-
-  const [currency, setCurrency] = useState("USD");
-
   // Handle Currency
   const handleCurrency = selectedOption => {
     setCurrency(selectedOption.value);
   };
 
+  //Preview Button Handle
   const handlePreview = e => {
     handleSave();
     window.open("/pdf");
   };
 
+  //Save All Data
   const handleSave = e => {
     localStorage.removeItem("InvoiceData");
     const finalData = {
@@ -82,21 +91,26 @@ const CreateInvoice = () => {
       from: billFrom,
       to: billTo,
       voucher_no: voucherNumber,
-      transaction_date: transactionDate,
-      due_date: dueDate,
-      createdAt: createdAt,
+      transaction_date: moment(transactionDate).format("MMMM DD, YYYY"),
+      due_date: moment(dueDate).format("MMMM DD, YYYY"),
+      createdAt: moment(createdAt).format("MMMM DD, YYYY"),
       items: items,
       sub_totoal: subTotal,
       discount: discount,
       taxes: taxes,
       total_tax: totalTax,
       total: totoal,
-      footer_data: footerData
+      footer_data: footerData,
+      currency: currency
     };
-
     localStorage.setItem("InvoiceData", JSON.stringify(finalData));
+
+    const data = localStorage.getItem("InvoiceData");
+    const invoiceData = JSON.parse(data);
+    console.log(invoiceData);
   };
 
+  //Uploading Logo Handle
   const onDrop = logo => {
     let file = logo[0];
 
@@ -111,12 +125,7 @@ const CreateInvoice = () => {
     };
   };
 
-  const handleRemoveItem = (e, i) => {
-    e.preventDefault();
-    const newItems = items.filter((_, index) => i !== index);
-    setItems(newItems);
-  };
-
+  //Add Item on Items list
   const handleAddItem = e => {
     e.preventDefault();
 
@@ -130,12 +139,20 @@ const CreateInvoice = () => {
     setItems([...items, newItem]);
   };
 
+  //Remove Item from Items list
+  const handleRemoveItem = (e, i) => {
+    e.preventDefault();
+    const newItems = items.filter((_, index) => i !== index);
+    setItems(newItems);
+  };
+
+  ////Handle Change Item on Items list
   const handleItemChange = (e, index) => {
     const newItems = [...items];
 
-    newItems[index].serial_number = index+1;
+    newItems[index].serial_number = index + 1;
 
-    switch (e.target.name) {      
+    switch (e.target.name) {
       case "rate":
         newItems[index].rate = e.target.value;
         break;
@@ -157,6 +174,7 @@ const CreateInvoice = () => {
     setItems(newItems);
   };
 
+  //Calculate Subtotal
   useEffect(() => {
     let subTotalState = items.reduce((prev, next) => {
       return (prev += parseInt(next.amount));
@@ -165,37 +183,55 @@ const CreateInvoice = () => {
     updateSubTotal(subTotalState);
   }, [items]);
 
-  // Handle Discount
-  const handleDiscountType = e => {
-    updateDiscount({ ...discount, ...{ type: e.target.value } });
+  //Function to Calculate Discount
+  const calculateDiscount = (type, amount) => {
+    let totalDiscount = 0;
+
+    if (type === "fixed") {
+      totalDiscount = amount;
+    } else if (type === "percentage") {
+      totalDiscount = subTotal * (amount / 100);
+    }
+    return totalDiscount;
   };
 
+  //Handle Discount Type
+  const handleDiscountType = e => {
+    let total = calculateDiscount(e.target.value, discount.discountAmount);
+    updateDiscount({
+      ...discount,
+      ...{ type: e.target.value, discountTotal: total }
+    });
+  };
+
+  //Handle Discount Amount
   const handleDiscount = e => {
     let value = e.target.value;
-
-    if (value.substring((0, value.length - 1)) === "%") {
-      value = value.substring(0, value.length - 1);
-    }
-
-    updateDiscount({ ...discount, ...{ discountAmount: value } });
+    let total = calculateDiscount(discount.type, value);
+    updateDiscount({
+      ...discount,
+      ...{ discountAmount: value, discountTotal: total }
+    });
   };
 
+  //Calculate Sub Total After Discount
   useEffect(() => {
-    let newSubTotal;
+    let total;
+    total = calculateDiscount(discount.type, discount.discountAmount);
+    updateDiscount({
+      ...discount,
+      ...{ discountTotal: total }
+    });
+  }, [subTotal]);
 
-    if (discount.type === "amount") {
-      newSubTotal = subTotal - parseInt(discount.discountAmount);
-    }
+  useEffect(() => {
+    let total;
 
-    if (discount.type === "percentage") {
-      const discountInPercentage = subTotal * (discount.discountAmount / 100);
-      newSubTotal = subTotal - discountInPercentage;
-    }
+    total = subTotal - parseInt(discount.discountTotal);
+    updateSubTotalAfterDiscount(total);
+  }, [discount, subTotal]);
 
-    updateTotal(newSubTotal);
-  }, [discount]);
-
-  // Handle Tax Part
+  // Handle Tax Fields
   const handleMultipleTaxField = e => {
     e.preventDefault();
     let newTaxField = { type: undefined, tax_percentage: 0 };
@@ -204,6 +240,7 @@ const CreateInvoice = () => {
     updateTax(taxFields);
   };
 
+  //Handle Remove Tax Row
   const handleRemoveTax = (e, i) => {
     e.preventDefault();
 
@@ -212,6 +249,7 @@ const CreateInvoice = () => {
     updateTax(newFields);
   };
 
+  //Handle Tax Change
   const handleTaxChange = (e, index) => {
     const taxData = [...taxes];
     taxData[index] = {
@@ -219,13 +257,14 @@ const CreateInvoice = () => {
       [e.target.name]: e.target.value
     };
 
-    if ( e.target.name == "tax_percentage" ) {
-      taxData[index].total = (subTotal * taxData[index].tax_percentage) / 100;
+    if (e.target.name == "tax_percentage") {
+      taxData[index].total = (subTotalAfterDiscount * taxData[index].tax_percentage) / 100;
     }
 
     updateTax(taxData);
   };
 
+  //Calculate Tax
   useEffect(() => {
     let totalTax = taxes.reduce((prev, next) => {
       return (prev += parseInt(next.total));
@@ -236,9 +275,9 @@ const CreateInvoice = () => {
 
   // calculating total
   useEffect(() => {
-    let updatedTotalWithTax = (subTotal + totalTax) - discount.discountAmount;
+    let updatedTotalWithTax = subTotalAfterDiscount + totalTax;
     updateTotal(updatedTotalWithTax);
-  }, [subTotal, totalTax]);
+  }, [subTotalAfterDiscount, totalTax]);
 
   //Handle Footer
   const handleFooter = e => {
@@ -270,7 +309,7 @@ const CreateInvoice = () => {
                 <InputWrapper className={"invoice"}>
                   <InputLabel>Invoice No</InputLabel>
                   <InputField
-                    type="number"
+                    type="text"
                     name="invoice-id"
                     placeholder="Add Invoice No"
                     value={invoice}
@@ -339,7 +378,6 @@ const CreateInvoice = () => {
                   <DatePicker
                     showPopperArrow={true}
                     selected={createdAt}
-                    dateFormat="mm/dd/yyyy"
                     onChange={date => setCreatedAt(date)}
                   />
                   <img className={"dateicon"} src={DateLogo} />
@@ -445,7 +483,7 @@ const CreateInvoice = () => {
                         <Discounts>
                           <InputLabel>Discount</InputLabel>
                           <select onChange={e => handleDiscountType(e)}>
-                            <option value="amount">Fixed</option>
+                            <option value="fixed">Fixed</option>
                             <option value="percentage">Percentage</option>
                           </select>
                           <InputField
@@ -457,7 +495,10 @@ const CreateInvoice = () => {
                       </td>
                       <td>
                         <InputLabel className="discount_amount">
-                          {currency} {discount.discountAmount}
+                          <span>
+                            {discount.discountAmount > 0 ? "-" : null}
+                          </span>{" "}
+                          {currency} {discount.discountTotal}
                         </InputLabel>
                       </td>
                     </tr>
@@ -494,7 +535,7 @@ const CreateInvoice = () => {
                             </td>
                             <td>
                               <InputLabel className="tax_amount">
-                                {currency} {tax.total}                                
+                                {currency} {tax.total}
                                 <button
                                   onClick={e => handleRemoveTax(e, index)}
                                 >

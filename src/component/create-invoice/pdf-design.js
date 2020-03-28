@@ -18,57 +18,9 @@ import {
   DataTableCell
 } from "@david.kucsai/react-pdf-table";
 
-const invoiceValues = {
-  logo: "https://localhost/images/logo",
-  invoice_no: "fdalfhahfdafddf",
-  from:
-    "name : X Company address : X Company city : X Company country : X Company",
-  to:
-    "name : X Company address : X Company city : X Company country : X Company",
-  voucher_no: "121354",
-  transaction_date: "23-02-2020",
-  due_date: "23-02-2020",
-  createdAt: "23-02-2020",
-  items: [
-    {
-      serial_number: "01",
-      product: "NX",
-      unit_price: "$5",
-      quantity: "2",
-      Amount: "$10"
-    },
-    {
-      serial_number: "01",
-      product: "NX",
-      unit_price: "$5",
-      quantity: "2",
-      Amount: "$10"
-    },
-    {
-      serial_number: "01",
-      product: "NX",
-      unit_price: "$5",
-      quantity: "2",
-      Amount: "$10"
-    }
-  ],
-  sub_totoal: "30",
-  discount: {
-    type: "amount",
-    amount: "10"
-  },
-  taxes: [".3", ".5", ".2"],
-  total: "400",
-  footer_data: {
-    title: "Terms and Conditions",
-    content: "blah blah blah"
-  }
-};
-
-// Create styles
+// PDF styles
 const styles = StyleSheet.create({
   page: {
-    // flexDirection: 'row',
     backgroundColor: "#fff"
   },
   Mainheader: {
@@ -103,7 +55,7 @@ const styles = StyleSheet.create({
     padding: "0",
     flexGrow: 1,
     flexDirection: "row",
-    maxHeight: "120px",
+    maxHeight: "100px",
     minHeight: "50px",
     margin: "20px"
   },
@@ -155,45 +107,67 @@ const styles = StyleSheet.create({
     alignItems: "flex-end"
   },
 
-  InvoiceTax: {
-    marginLeft: "auto",
-    marginRight: "30px",
-    marginBottom: "5px",
-    marginTop: "10px",
-    alignItems: "flex-end",
-    width: "50%",
-    borderTop: "1"
-  },
-  TaxTableCell: {
-    padding: "5px",
-    fontSize: "12",
-  },
-
-  FinalTotal: {    
+  FinalTotal: {
     backgroundColor: "#485195",
     padding: "10px",
-    marginTop: "10px",
     textAlign: "right",
     width: "50%",
     fontSize: "14",
     color: "#fff",
     borderRadius: "5"
   },
+  FooterData: {
+    margin: "20px",
+    marginBottom: "5px",
+    backgroundColor: "#eff2fa",
+    padding: "20px",
+    borderRadius: "5"
+  },
+  FooterDataTitle: {
+    fontSize: "12",
+    marginBottom: "10px"
+  },
+  FooterDataText: {
+    fontSize: "11"
+  },
 
-  FromAddress: {
+  BottomLine: {
+    height: "30px",
     width: "100%",
-    maxHeight: "120px",
-    boxSizing: "border-box",
-    border: "0",
-    borderRadius: "5px",
-    padding: "12px 20px",
-    color: "#485195"
+    position: "absolute",
+    bottom: "0",
+    left: "0",
+    backgroundColor: "#485195"
+  },
+  Summary: {
+    flexGrow: 1,
+    flexDirection: "row",
+    fontSize: "12",
+    margin: "0px 20px",
+  },
+  SummaryLeft: {
+    width: "50%"
+  },
+  SummaryRight: {
+    width: "50%"
+  },
+  SummaryRightRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginBottom: "5px"
+  },
+  summeryTitle: {
+    margin: "0 0 0 auto"
+  },
+  summeryAmount: {
+    width: "100px",
+    textAlign: "right"
   }
 });
 
 const data = localStorage.getItem("InvoiceData");
 const invoiceData = JSON.parse(data);
-const itemSerialNumber = "100";
+console.log("invoiceData", invoiceData);
 
 // Create Document Component
 const PDFDisplay = () => (
@@ -207,14 +181,10 @@ const PDFDisplay = () => (
     }}
   >
     <Document>
-      {console.log("invoiceData", invoiceData.items)}
       <Page size="A4" style={styles.page}>
         <View style={styles.Mainheader}>
           <View style={styles.ImageDiv}>
-            <Image
-              style={styles.Image}
-              src={invoiceData.logo}
-            />
+            { invoiceData.logo && (<Image style={styles.Image} src={invoiceData.logo} />) }            
           </View>
 
           <View style={styles.Invoice}>
@@ -242,7 +212,9 @@ const PDFDisplay = () => (
 
           <View style={styles.ColumnFour}>
             <Text style={styles.Title}>Transaction Date</Text>
-            <Text style={styles.AddressValue}>{invoiceData.transaction_date}</Text>
+            <Text style={styles.AddressValue}>
+              {invoiceData.transaction_date}
+            </Text>
           </View>
           <View style={styles.ColumnFour}>
             <Text style={styles.Title}>Due Date</Text>
@@ -267,60 +239,85 @@ const PDFDisplay = () => (
             <TableBody>
               <DataTableCell
                 style={styles.TableCell}
-                getContent={(r) => r.serial_number}
+                getContent={r => r.serial_number}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={(r) => r.name}
+                getContent={r => r.name}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={(r) => r.rate}
+                getContent={r => r.rate}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={(r) => r.quantity}
+                getContent={r => r.quantity}
               />
               <DataTableCell
                 style={styles.TableCell}
-                getContent={(r) => r.amount}
+                getContent={r => r.amount}
               />
             </TableBody>
           </Table>
         </View>
 
-        <View style={styles.InvoiceSummary}>
-          <Text style={styles.Title}>
-            Sub Total: {invoiceData.createdAt}
-          </Text>
-        </View>
-        <View style={styles.InvoiceSummary}>
-          <Text style={styles.Title}>
-            Discount: {invoiceValues.discount.type}:{" "}
-            {invoiceData.createdAt}
-          </Text>
-        </View>
+        <View style={styles.Summary}>
+          <View style={styles.SummaryLeft}></View>
 
-        <View style={styles.InvoiceTax}>
-          <Table data={invoiceData.taxes}>
-            <TableBody style={styles.TaxTableBody}>
-              <TableCell style={styles.TaxTableCell}>Taxes</TableCell>
-              <DataTableCell style={styles.TaxTableCell} getContent={r => r.total} />
-            </TableBody>
-          </Table>
-        </View>
-        <View style={styles.InvoiceSummary}>
-          <Text style={styles.FinalTotal}>
-            Total: 100
-          </Text>
-        </View>
+          <View style={styles.SummaryRight}>
+            <View style={styles.SummaryRightRow}>
+              <Text style={styles.summeryTitle}>Sub Total</Text>
+              <Text style={styles.summeryAmount}>
+                {invoiceData.currency}
+                {invoiceData.sub_totoal}
+              </Text>
+            </View>
 
-        {invoiceValues.footer_data.length > 0 && (
-          <View style={styles.BodyHead}>
-            <Text>{invoiceValues.footer_data.title}</Text>
-            <Text>{invoiceValues.footer_data.content}</Text>
+            <View style={styles.SummaryRightRow}>
+              <Text style={styles.summeryTitle}>
+                Discount (
+                {invoiceData.discount.type == "fixed"
+                  ? "fixed"
+                  : invoiceData.discount.type == "percentage"
+                  ? invoiceData.discount.discountAmount + "%"
+                  : "fixed"}
+                )
+              </Text>
+              <Text style={styles.summeryAmount}>
+                {invoiceData.currency}
+                {invoiceData.discount.discountTotal}
+              </Text>
+            </View>
+
+            {invoiceData.taxes.map((item, i) => {
+              return (
+                <View style={styles.SummaryRightRow}>
+                  <Text style={styles.summeryTitle}>
+                    {item.type} ({item.tax_percentage + "%"})
+                  </Text>
+                  <Text style={styles.summeryAmount}>
+                    {invoiceData.currency}
+                    {item.total}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
-        )}
+        </View>
+        <View style={styles.InvoiceSummary}>
+          <Text style={styles.FinalTotal}>Total: {invoiceData.total}</Text>
+        </View>
+
+        <View style={styles.FooterData}>
+          <Text style={styles.FooterDataTitle}>
+            {invoiceData.footer_data.title}
+          </Text>
+          <Text style={styles.FooterDataText}>
+            {invoiceData.footer_data.content}
+          </Text>
+        </View>
+
+        <View style={styles.BottomLine}></View>
       </Page>
     </Document>
   </PDFViewer>

@@ -513,6 +513,14 @@ export const TableMain = styled.table`
         color: #485195;
         font-weight: 500;
         margin: 0;
+        
+        span {
+          color: #fd0404;
+          font-size: 2em;
+          padding-right: 5px;
+          line-height: 1;
+          margin-top: -6px;
+        }
       }
       > td {
         padding: 0;
