@@ -5,7 +5,14 @@ export const Wrapper = styled.div`
   width: 100%;
   overflow: hidden;
   background-color: #cad1e5;
-  min-height: 100vh;
+  min-height: 100vh;  
+
+  button {
+    -webkit-transition: .5s ease;
+    -moz-transition: .5s ease;
+    -o-transition: .5s ease;
+    transition: .5s ease;
+  }
 `;
 
 export const Container = styled.div`
@@ -144,18 +151,19 @@ export const MainHeader = styled.div`
     border-radius: 5px;
     border: 0;
     padding: 15px 20px;
+    color: #fff;
 
     &::-webkit-input-placeholder {
-      color: #fff;
+      color: #dcdcdc;
     }
     &::-moz-placeholder {
-      color: #fff;
+      color: #dcdcdc;
     }
     &:-ms-input-placeholder {
-      color: #fff;
+      color: #dcdcdc;
     }
     &:-moz-placeholder {
-      color: #fff;
+      color: #dcdcdc;
     }
   }
 `;
@@ -250,10 +258,16 @@ export const TextareaField = styled.textarea`
   box-sizing: border-box;
   background-color: #eff2fa;
   border: 0;
+  box-shadow: 0 0 5px 0px transparent;
   border-radius: 5px;
   padding: 12px 20px;
   color: #333;
   resize: none;
+
+  &:focus {
+    box-shadow: inset 0 0 5px 0px #cecece;
+    outline: 0;
+  }
 
   &::-webkit-input-placeholder {
     color: #999;
@@ -278,6 +292,11 @@ export const InputField = styled.input`
   padding: 12px 20px;
   color: #333;
 
+  &:focus {
+    box-shadow: inset 0 0 5px 0px #cecece;
+    outline: 0;
+  }
+
   &::-webkit-input-placeholder {
     color: #999;
   }
@@ -295,6 +314,15 @@ export const InputField = styled.input`
 export const InputWrapper = styled.div`
   width: 100%;
   margin: 0px 0 1.5em 0;
+  position: relative;
+
+  .dateicon {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 30px;
+    top: 45px;
+  }
 `;
 
 export const InputLabel = styled.label`
@@ -348,6 +376,7 @@ export const TableMain = styled.table`
     tr td:last-child {
       border-top-right-radius: 5px;
       border-bottom-right-radius: 5px;
+      padding-right: 30px;
     }
     tr {
       td {
@@ -363,9 +392,10 @@ export const TableMain = styled.table`
           font-weight: 500;
           font-size: 0.9em;
           width: 100%;
-          padding: 5px 10px;
+          padding: 8px 10px;
           box-sizing: border-box;
           text-align: center;
+          border: 1px solid #e4e4e4;
 
           &:focus {
             border: 1px solid #6d76bf;
@@ -435,7 +465,63 @@ export const TableMain = styled.table`
       padding: 5px 15px;
     }
 
+    .add_tax_calc .add_tax {
+      margin-top: 10px;
+      display: block;
+    }
+
+    .add_tax_calc td:last-child, .net_total td:last-child {
+      padding-right: 0;
+    }
+
+    .tax.calculation {
+      .tax {
+        padding: 5px;
+        border-radius: 5px;
+
+        input {
+          padding: 5px 15px;
+          margin: 0 5px;
+          border: 1px solid #e4e4e4;
+          height: 40px;
+        }
+
+        .tax_type {
+          color: #43486a;
+          font-weight: 700;
+          font-size: 1em;
+        }
+      }
+      .tax_amount {
+        color: #485195;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+
     .calculation {
+      .discount {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+
+      .discount_amount {
+        display: flex;
+        align-items: center;
+        min-width: 100px;
+        justify-content: center;
+        color: #485195;
+        font-weight: 500;
+        margin: 0;
+        
+        span {
+          color: #fd0404;
+          font-size: 2em;
+          padding-right: 5px;
+          line-height: 1;
+          margin-top: -6px;
+        }
+      }
       > td {
         padding: 0;
       }
@@ -469,6 +555,11 @@ export const TableMain = styled.table`
             left: 0;
             top: 50%;
             margin-top: -15px;
+            -webkit-transition: .5s ease;
+            -moz-transition: .5s ease;
+            -o-transition: .5s ease;
+            -webkit-transition: .5s ease;
+            transition: .5s ease;
           }
 
           &:hover {
@@ -529,27 +620,28 @@ export const Discounts = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  padding: 5px 20px;
+  border-radius: 5px;
 
   label,
   input,
   select {
     margin-bottom: 0px;
     box-sizing: border-box;
-    padding: 10px 15px;
-    border: 1px solid #6d76bf;
+    padding: auto;
+    border: 1px solid transparent;
     border-radius: 0;
-    height: 46px;
+    height: 40px;
   }
 
   label {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
     border-right: 0;
+    display: flex;
+    align-items: center;
   }
-  input {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-left: 0;
+  input,
+  select {
+    max-width: 100px;
   }
 `;
 
@@ -572,11 +664,6 @@ export const TaxRow = styled.div`
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-right: 0;
-  }
-  .tax_amount {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-left: 0;
   }
 `;
 
