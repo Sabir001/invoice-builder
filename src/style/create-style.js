@@ -5,13 +5,13 @@ export const Wrapper = styled.div`
   width: 100%;
   overflow: hidden;
   background-color: #cad1e5;
-  min-height: 100vh;  
+  min-height: 100vh;
 
   button {
-    -webkit-transition: .5s ease;
-    -moz-transition: .5s ease;
-    -o-transition: .5s ease;
-    transition: .5s ease;
+    -webkit-transition: 0.5s ease;
+    -moz-transition: 0.5s ease;
+    -o-transition: 0.5s ease;
+    transition: 0.5s ease;
   }
 `;
 
@@ -90,6 +90,10 @@ export const MainHeader = styled.div`
     border-top-right-radius: 10px;
   }
 
+  .fileUploader.uploaded .fileContainer {
+    border: unset;
+    box-shadow: unset;
+  }
   .fileUploader {
     max-width: 250px;
 
@@ -127,17 +131,37 @@ export const MainHeader = styled.div`
         background-color: transparent;
         margin: 0;
         padding: 0;
+        z-index: 999;
       }
+
       .uploadPicturesWrapper {
         position: absolute;
-        
-        .uploadPictureContainer {
-          width: 100%;
-          margin: 0;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+
+        > div {
+          display: block !important;
+          height: 100%;
+
+          .uploadPictureContainer {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background-color: #485195;
+            box-shadow: unset;
+  
+            img {
+              max-height: 100%;
+              max-width: 100%;
+              width: auto;
+              height: auto;
+            }
+          }
         }
-      }
-    
-    
+      }    
     }
   }
 
@@ -247,7 +271,7 @@ export const MainBody = styled.div`
     background-color: #eff2fa;
     border: 0;
     border-radius: 5px;
-    padding: 12px 20px;
+    padding: 11px 20px;
     color: #333;
   }
 `;
@@ -470,8 +494,28 @@ export const TableMain = styled.table`
       display: block;
     }
 
-    .add_tax_calc td:last-child, .net_total td:last-child {
+    .add_tax_calc td:last-child,
+    .net_total td:last-child {
       padding-right: 0;
+    }
+
+    .after_calc_subtotal.calculation {
+      td {
+        background-color: transparent;
+        border-top: 1px solid #eaeaea;
+        border-radius: 0;
+
+        label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 15px 0 3px;
+          font-size: 1.1em;
+        }
+      }
+      .blank {
+        border-top: 0px;
+      }
     }
 
     .tax.calculation {
@@ -513,7 +557,7 @@ export const TableMain = styled.table`
         color: #485195;
         font-weight: 500;
         margin: 0;
-        
+
         span {
           color: #fd0404;
           font-size: 2em;
@@ -555,11 +599,11 @@ export const TableMain = styled.table`
             left: 0;
             top: 50%;
             margin-top: -15px;
-            -webkit-transition: .5s ease;
-            -moz-transition: .5s ease;
-            -o-transition: .5s ease;
-            -webkit-transition: .5s ease;
-            transition: .5s ease;
+            -webkit-transition: 0.5s ease;
+            -moz-transition: 0.5s ease;
+            -o-transition: 0.5s ease;
+            -webkit-transition: 0.5s ease;
+            transition: 0.5s ease;
           }
 
           &:hover {
@@ -576,6 +620,11 @@ export const TableMain = styled.table`
 
       .summary {
         border-radius: 5px;
+      }
+    }
+    .net_total {
+      label {
+        font-size: 1.1em;
       }
     }
   }
@@ -639,9 +688,11 @@ export const Discounts = styled.div`
     display: flex;
     align-items: center;
   }
-  input,
-  select {
+  input {
     max-width: 100px;
+  }
+  select {
+    max-width: 140px;
   }
 `;
 
