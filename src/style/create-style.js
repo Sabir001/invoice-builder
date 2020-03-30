@@ -393,6 +393,9 @@ export const TableMain = styled.table`
   }
 
   tbody {
+    .item_name {
+      width: 35%;
+    }
     tr td:first-child {
       border-top-left-radius: 5px;
       border-bottom-left-radius: 5px;

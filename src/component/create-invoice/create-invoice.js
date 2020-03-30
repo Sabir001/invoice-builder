@@ -72,9 +72,29 @@ const CreateInvoice = () => {
     content: undefined
   });
 
+  const [numberType, setNumberType] = useState("round"); //Number Type: Decimal or Round
+
   // Handle Currency
   const handleCurrency = selectedOption => {
     setCurrency(selectedOption.value);
+  };
+
+  // Handle Number Type
+  const handleNumberType = selectedOption => {
+    setNumberType(selectedOption.value);
+  };
+
+  //Function to Convert Number into Appropiate Number Type
+  const handleNumber = number => {
+    // console.log(" - ",number);
+    // if (numberType === "round") {
+    //   number = Math.floor(number);
+    // } else if (numberType === "decimal") {
+    //   number = number.toFixed(2);
+    // } else {
+    //   number = number;
+    // }
+    return number;
   };
 
   //Preview Button Handle
@@ -97,6 +117,7 @@ const CreateInvoice = () => {
       createdAt: moment(createdAt).format("MMMM DD, YYYY"),
       items: items,
       sub_totoal: subTotal,
+      sub_totoal_after_discount: subTotalAfterDiscount,
       discount: discount,
       taxes: taxes,
       total_tax: totalTax,
@@ -169,8 +190,9 @@ const CreateInvoice = () => {
     }
 
     if (e.target.name == "rate" || e.target.name == "quantity") {
-      newItems[index].amount =
-        (newItems[index].rate) * (newItems[index].quantity);
+      newItems[index].amount = handleNumber(
+        newItems[index].rate * newItems[index].quantity
+      );
     }
 
     setItems(newItems);
@@ -179,10 +201,10 @@ const CreateInvoice = () => {
   //Calculate Subtotal
   useEffect(() => {
     let subTotalState = items.reduce((prev, next) => {
-      return (prev += (next.amount));
+      return (prev += next.amount);
     }, 0);
 
-    updateSubTotal(subTotalState);
+    updateSubTotal(handleNumber(subTotalState));
   }, [items]);
 
   //Function to Calculate Discount
@@ -252,7 +274,7 @@ const CreateInvoice = () => {
   };
 
   //Function to Calculate Tax Amount
-  const calculateTax = (amount) => {
+  const calculateTax = amount => {
     let totalTax = subTotalAfterDiscount * (amount / 100);
     return totalTax;
   };
@@ -277,15 +299,19 @@ const CreateInvoice = () => {
     let taxArray = [];
     taxes.map((item, i) => {
       let itemTax = calculateTax(item.tax_percentage);
-      taxArray[i] = { type: item.type, tax_percentage: item.tax_percentage, total: itemTax };
-    })
+      taxArray[i] = {
+        type: item.type,
+        tax_percentage: item.tax_percentage,
+        total: itemTax
+      };
+    });
     updateTax(taxArray);
   }, [subTotalAfterDiscount, items]);
 
   //Calculate Total Tax
   useEffect(() => {
     let totalTax = taxes.reduce((prev, next) => {
-      return (prev += (next.total));
+      return (prev += next.total);
     }, 0);
 
     updateTotalTax(totalTax);
@@ -314,7 +340,7 @@ const CreateInvoice = () => {
             <ContentLeft>
               <InnerRow>
                 <ImageUploader
-                  className={hasLogo? "uploaded" : ""}
+                  className={hasLogo ? "uploaded" : ""}
                   withIcon={false}
                   withPreview={true}
                   singleImage={true}
@@ -428,7 +454,7 @@ const CreateInvoice = () => {
                   <thead>
                     <tr>
                       <th>Serial No</th>
-                      <th>Item Name</th>
+                      <th className="item_name">Item Name</th>
                       <th>Unit Price</th>
                       <th>Quantity</th>
                       <th>Amount</th>
@@ -441,7 +467,7 @@ const CreateInvoice = () => {
                         <tr key={i}>
                           <td>{i + 1}</td>
 
-                          <td>
+                          <td className="item_name">
                             <InputField
                               name="name"
                               type="text"
@@ -481,12 +507,12 @@ const CreateInvoice = () => {
                     })}
 
                     <tr>
-                      <td className={"add_items"} colSpan="3">
+                      <td className={"add_items"} colSpan="2">
                         <button onClick={e => handleAddItem(e)}>
                           + Line Item
                         </button>
                       </td>
-                      <td className={"subtotal_label"}>
+                      <td className={"subtotal_label"} colSpan="2">
                         <div>Sub Total</div>
                       </td>
                       <td className={"subtotal_amount"}>
@@ -497,8 +523,8 @@ const CreateInvoice = () => {
                     </tr>
 
                     <tr className="calculation">
-                      <td className={"blank"} colSpan="3"></td>
-                      <td className={"discount"}>
+                      <td className={"blank"} colSpan="2"></td>
+                      <td className={"discount"} colSpan="2">
                         <Discounts>
                           <InputLabel>Discount</InputLabel>
                           <select onChange={e => handleDiscountType(e)}>
@@ -524,8 +550,8 @@ const CreateInvoice = () => {
 
                     {discount.discountTotal > 0 && (
                       <tr className="after_calc_subtotal calculation">
-                        <td className={"blank"} colSpan="3"></td>
-                        <td>
+                        <td className={"blank"} colSpan="2"></td>
+                        <td colSpan="2">
                           <InputLabel>Sub Total after Discount</InputLabel>
                         </td>
                         <td>
@@ -540,8 +566,8 @@ const CreateInvoice = () => {
                       return (
                         <React.Fragment key={index}>
                           <tr className="tax calculation">
-                            <td className={"blank"} colSpan="3"></td>
-                            <td className={"tax"}>
+                            <td className={"blank"} colSpan="2"></td>
+                            <td className={"tax"} colSpan="2">
                               <TaxRow>
                                 <InputField
                                   className="tax_type"
@@ -582,18 +608,18 @@ const CreateInvoice = () => {
                     })}
 
                     <tr className="add_tax_calc calculation">
-                      <td className={"blank"} colSpan="3"></td>
-                      <td className={"add_tax"} colSpan="2">
+                      <td className={"blank"} colSpan="2"></td>
+                      <td className={"add_tax"} colSpan="3">
                         <button onClick={e => handleMultipleTaxField(e)}>
                           <span>+</span> Add Tax
                         </button>
                       </td>
-                    </tr>                    
+                    </tr>
 
                     {totalTax > 0 && (
                       <tr className="after_calc_subtotal calculation">
-                        <td className={"blank"} colSpan="3"></td>
-                        <td>
+                        <td className={"blank"} colSpan="2"></td>
+                        <td colSpan="2">
                           <InputLabel>Total Tax Amount</InputLabel>
                         </td>
                         <td>
@@ -605,8 +631,8 @@ const CreateInvoice = () => {
                     )}
 
                     <tr className="net_total calculation">
-                      <td className={"blank"} colSpan="3"></td>
-                      <td className={"summary"} colSpan="2">
+                      <td className={"blank"} colSpan="2"></td>
+                      <td className={"summary"} colSpan="3">
                         <FinalTotal>
                           <InputLabel>Net Total</InputLabel>
                           <InputLabel>
@@ -655,6 +681,18 @@ const CreateInvoice = () => {
                   })}
                 />
               </InputWrapper>
+
+              {/* <InputWrapper>
+                <InputLabel>Number Type</InputLabel>
+                <Select
+                  placeholder={"round"}
+                  onChange={e => handleNumberType(e)}
+                  options={[
+                    { value: "round", label: "Round (00)" },
+                    { value: "decimal", label: "Decimal (00.00)" }
+                  ]}
+                />
+              </InputWrapper> */}
             </ContentRight>
           </Row>
         </Container>
