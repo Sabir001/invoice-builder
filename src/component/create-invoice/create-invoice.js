@@ -35,6 +35,7 @@ import {
 
 const CreateInvoice = () => {
   const [logo, setLogo] = useState();
+  const [hasLogo, setHasLogo] = useState(false);
   const [invoice, setinvoice] = useState("");
   const [billFrom, setBillFrom] = useState("");
   const [billTo, setBillTo] = useState("");
@@ -46,7 +47,7 @@ const CreateInvoice = () => {
 
   const [items, setItems] = useState([
     { serial_number: 1, name: "", quantity: 1, rate: 0, amount: 0 }
-  ]);  
+  ]);
 
   const [currency, setCurrency] = useState("USD"); //Currency
 
@@ -122,6 +123,7 @@ const CreateInvoice = () => {
 
     reader.onloadend = () => {
       setLogo(file ? reader.result : logo);
+      setHasLogo(file ? true : false);
     };
   };
 
@@ -168,7 +170,7 @@ const CreateInvoice = () => {
 
     if (e.target.name == "rate" || e.target.name == "quantity") {
       newItems[index].amount =
-        parseInt(newItems[index].rate) * parseInt(newItems[index].quantity);
+        (newItems[index].rate) * (newItems[index].quantity);
     }
 
     setItems(newItems);
@@ -177,7 +179,7 @@ const CreateInvoice = () => {
   //Calculate Subtotal
   useEffect(() => {
     let subTotalState = items.reduce((prev, next) => {
-      return (prev += parseInt(next.amount));
+      return (prev += (next.amount));
     }, 0);
 
     updateSubTotal(subTotalState);
@@ -227,7 +229,7 @@ const CreateInvoice = () => {
   useEffect(() => {
     let total;
 
-    total = subTotal - parseInt(discount.discountTotal);
+    total = subTotal - discount.discountTotal;
     updateSubTotalAfterDiscount(total);
   }, [discount, subTotal]);
 
@@ -249,6 +251,12 @@ const CreateInvoice = () => {
     updateTax(newFields);
   };
 
+  //Function to Calculate Tax Amount
+  const calculateTax = (amount) => {
+    let totalTax = subTotalAfterDiscount * (amount / 100);
+    return totalTax;
+  };
+
   //Handle Tax Change
   const handleTaxChange = (e, index) => {
     const taxData = [...taxes];
@@ -258,22 +266,32 @@ const CreateInvoice = () => {
     };
 
     if (e.target.name == "tax_percentage") {
-      taxData[index].total = (subTotalAfterDiscount * taxData[index].tax_percentage) / 100;
+      taxData[index].total = calculateTax(taxData[index].tax_percentage);
     }
 
     updateTax(taxData);
   };
 
-  //Calculate Tax
+  // calculating Each Tax Item
+  useEffect(() => {
+    let taxArray = [];
+    taxes.map((item, i) => {
+      let itemTax = calculateTax(item.tax_percentage);
+      taxArray[i] = { type: item.type, tax_percentage: item.tax_percentage, total: itemTax };
+    })
+    updateTax(taxArray);
+  }, [subTotalAfterDiscount, items]);
+
+  //Calculate Total Tax
   useEffect(() => {
     let totalTax = taxes.reduce((prev, next) => {
-      return (prev += parseInt(next.total));
+      return (prev += (next.total));
     }, 0);
 
     updateTotalTax(totalTax);
   }, [taxes]);
 
-  // calculating total
+  // calculating Net total
   useEffect(() => {
     let updatedTotalWithTax = subTotalAfterDiscount + totalTax;
     updateTotal(updatedTotalWithTax);
@@ -296,6 +314,7 @@ const CreateInvoice = () => {
             <ContentLeft>
               <InnerRow>
                 <ImageUploader
+                  className={hasLogo? "uploaded" : ""}
                   withIcon={false}
                   withPreview={true}
                   singleImage={true}
@@ -503,6 +522,20 @@ const CreateInvoice = () => {
                       </td>
                     </tr>
 
+                    {discount.discountTotal > 0 && (
+                      <tr className="after_calc_subtotal calculation">
+                        <td className={"blank"} colSpan="3"></td>
+                        <td>
+                          <InputLabel>Sub Total after Discount</InputLabel>
+                        </td>
+                        <td>
+                          <InputLabel>
+                            {currency} {subTotalAfterDiscount}
+                          </InputLabel>
+                        </td>
+                      </tr>
+                    )}
+
                     {taxes.map((tax, index) => {
                       return (
                         <React.Fragment key={index}>
@@ -555,13 +588,27 @@ const CreateInvoice = () => {
                           <span>+</span> Add Tax
                         </button>
                       </td>
-                    </tr>
+                    </tr>                    
+
+                    {totalTax > 0 && (
+                      <tr className="after_calc_subtotal calculation">
+                        <td className={"blank"} colSpan="3"></td>
+                        <td>
+                          <InputLabel>Total Tax Amount</InputLabel>
+                        </td>
+                        <td>
+                          <InputLabel>
+                            {currency} {totalTax}
+                          </InputLabel>
+                        </td>
+                      </tr>
+                    )}
 
                     <tr className="net_total calculation">
                       <td className={"blank"} colSpan="3"></td>
                       <td className={"summary"} colSpan="2">
                         <FinalTotal>
-                          <InputLabel>Total</InputLabel>
+                          <InputLabel>Net Total</InputLabel>
                           <InputLabel>
                             {currency} {totoal}
                           </InputLabel>
