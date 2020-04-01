@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import ImageUploader from "react-images-upload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,6 +6,9 @@ import moment from "moment";
 import CurrencyData from "../currency/currency";
 import Select from "react-select";
 import DateLogo from "../../assets/image/datepicker-icon.png";
+import ReactPDF from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PDFDisplay from "./pdf-design";
 
 import {
   Wrapper,
@@ -43,7 +45,6 @@ const CreateInvoice = () => {
   const [transactionDate, setTransactionDate] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
   const [createdAt, setCreatedAt] = useState(new Date());
-  const history = useHistory();
 
   const [items, setItems] = useState([
     { serial_number: 1, name: "", quantity: 1, rate: 0, amount: 0 }
@@ -72,7 +73,7 @@ const CreateInvoice = () => {
     content: undefined
   });
 
-  const [numberType, setNumberType] = useState("round"); //Number Type: Decimal or Round
+  const [roundNumber, setRoundNumber] = useState(true); //Number Type: Decimal or Round
 
   // Handle Currency
   const handleCurrency = selectedOption => {
@@ -80,20 +81,26 @@ const CreateInvoice = () => {
   };
 
   // Handle Number Type
-  const handleNumberType = selectedOption => {
-    setNumberType(selectedOption.value);
+  const handleroundNumber = selectedOption => {
+    if (selectedOption.value === "round") {
+      setRoundNumber(true);
+    }
+    else {
+      setRoundNumber(false);
+    }    
   };
 
   //Function to Convert Number into Appropiate Number Type
   const handleNumber = number => {
-    // console.log(" - ",number);
-    // if (numberType === "round") {
-    //   number = Math.floor(number);
-    // } else if (numberType === "decimal") {
-    //   number = number.toFixed(2);
-    // } else {
-    //   number = number;
-    // }
+    if (!number) {
+      number = 0;
+    }
+    
+    if (roundNumber) {
+      number = Math.floor(number);
+    } else {
+      number = parseFloat(number).toFixed(2);
+    }
     return number;
   };
 
@@ -101,6 +108,12 @@ const CreateInvoice = () => {
   const handlePreview = e => {
     handleSave();
     window.open("/pdf");
+  };
+
+  //Preview Button Handle
+  const handlePdfDownload = e => {
+    handleSave();
+    ReactPDF.render(<PDFDisplay />, `${__dirname}/example.pdf`);
   };
 
   //Save All Data
@@ -129,7 +142,6 @@ const CreateInvoice = () => {
 
     const data = localStorage.getItem("InvoiceData");
     const invoiceData = JSON.parse(data);
-    console.log(invoiceData);
   };
 
   //Uploading Logo Handle
@@ -189,10 +201,9 @@ const CreateInvoice = () => {
         break;
     }
 
-    if (e.target.name == "rate" || e.target.name == "quantity") {
-      newItems[index].amount = handleNumber(
-        newItems[index].rate * newItems[index].quantity
-      );
+    if (e.target.name === "rate" || e.target.name === "quantity") {      
+      let amount = newItems[index].rate * newItems[index].quantity;
+      newItems[index].amount = handleNumber(amount);
     }
 
     setItems(newItems);
@@ -201,9 +212,8 @@ const CreateInvoice = () => {
   //Calculate Subtotal
   useEffect(() => {
     let subTotalState = items.reduce((prev, next) => {
-      return (prev += next.amount);
+      return (parseFloat(prev) + parseFloat(next.amount));
     }, 0);
-
     updateSubTotal(handleNumber(subTotalState));
   }, [items]);
 
@@ -216,7 +226,7 @@ const CreateInvoice = () => {
     } else if (type === "percentage") {
       totalDiscount = subTotal * (amount / 100);
     }
-    return totalDiscount;
+    return handleNumber(totalDiscount);
   };
 
   //Handle Discount Type
@@ -248,11 +258,12 @@ const CreateInvoice = () => {
     });
   }, [subTotal]);
 
+  //
   useEffect(() => {
     let total;
 
     total = subTotal - discount.discountTotal;
-    updateSubTotalAfterDiscount(total);
+    updateSubTotalAfterDiscount(handleNumber(total));
   }, [discount, subTotal]);
 
   // Handle Tax Fields
@@ -276,7 +287,7 @@ const CreateInvoice = () => {
   //Function to Calculate Tax Amount
   const calculateTax = amount => {
     let totalTax = subTotalAfterDiscount * (amount / 100);
-    return totalTax;
+    return handleNumber(totalTax);
   };
 
   //Handle Tax Change
@@ -287,7 +298,7 @@ const CreateInvoice = () => {
       [e.target.name]: e.target.value
     };
 
-    if (e.target.name == "tax_percentage") {
+    if (e.target.name === "tax_percentage") {
       taxData[index].total = calculateTax(taxData[index].tax_percentage);
     }
 
@@ -311,16 +322,16 @@ const CreateInvoice = () => {
   //Calculate Total Tax
   useEffect(() => {
     let totalTax = taxes.reduce((prev, next) => {
-      return (prev += next.total);
+      return (parseFloat(prev) + parseFloat(next.total));
     }, 0);
 
-    updateTotalTax(totalTax);
+    updateTotalTax(handleNumber(totalTax));
   }, [taxes]);
 
   // calculating Net total
   useEffect(() => {
-    let updatedTotalWithTax = subTotalAfterDiscount + totalTax;
-    updateTotal(updatedTotalWithTax);
+    let updatedTotalWithTax = parseFloat(subTotalAfterDiscount) + parseFloat(totalTax);
+    updateTotal(handleNumber(updatedTotalWithTax));
   }, [subTotalAfterDiscount, totalTax]);
 
   //Handle Footer
@@ -369,7 +380,7 @@ const CreateInvoice = () => {
               <ActionButtons>
                 <button onClick={e => handlePreview(e)}>Preview</button>
                 <button onClick={e => handleSave(e)}>Save</button>
-                <button>Download</button>
+                <button onClick={e => handlePreview(e)}>Download</button>
               </ActionButtons>
             </ContentRight>
           </Row>
@@ -682,17 +693,17 @@ const CreateInvoice = () => {
                 />
               </InputWrapper>
 
-              {/* <InputWrapper>
+              <InputWrapper>
                 <InputLabel>Number Type</InputLabel>
                 <Select
-                  placeholder={"round"}
-                  onChange={e => handleNumberType(e)}
+                  placeholder={"Round"}
+                  onChange={e => handleroundNumber(e)}
                   options={[
                     { value: "round", label: "Round (00)" },
                     { value: "decimal", label: "Decimal (00.00)" }
                   ]}
                 />
-              </InputWrapper> */}
+              </InputWrapper>
             </ContentRight>
           </Row>
         </Container>

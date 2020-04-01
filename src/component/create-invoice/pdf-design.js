@@ -303,9 +303,9 @@ const PDFDisplay = () => (
               <View style={styles.SummaryRightRow}>
                 <Text style={styles.summeryTitle}>
                   Discount (
-                  {invoiceData.discount.type == "fixed"
+                  {invoiceData.discount.type === "fixed"
                     ? "fixed"
-                    : invoiceData.discount.type == "percentage"
+                    : invoiceData.discount.type === "percentage"
                     ? invoiceData.discount.discountAmount + "%"
                     : "fixed"}
                   )
