@@ -84,6 +84,7 @@ const CreateInvoice = () => {
     createdDate: "",
     transactionDate: "",
     dueDate: "",
+    items: "",
   });
 
   // Handle Currency
@@ -147,39 +148,49 @@ const CreateInvoice = () => {
       var billToError = ["Please provide Billing Information"];
     }
 
+    if (items.length == 1) {
+      if (isEmpty(items[0].name)) {
+        errorNum++;
+        var itemError = ["Please Fill up valid Item Information"];
+      }
+    }
+
     setError({
       logo: logoError,
       invoiceNo: InvoiceError,
       billFrom: billFromError,
       billTo: billToError,
+      items: itemError,
     });
 
     if (isEmpty(voucherNumber)) {
       setVoucherNumber("N/A");
     }
 
-    console.log("Error Number", errorNum);
-    localStorage.removeItem("InvoiceData");
-    const finalData = {
-      logo: logo,
-      invoice_no: invoice,
-      from: billFrom,
-      to: billTo,
-      voucher_no: voucherNumber,
-      transaction_date: moment(transactionDate).format("MMMM DD, YYYY"),
-      due_date: moment(dueDate).format("MMMM DD, YYYY"),
-      createdAt: moment(createdAt).format("MMMM DD, YYYY"),
-      items: items,
-      sub_totoal: subTotal,
-      sub_totoal_after_discount: subTotalAfterDiscount,
-      discount: discount,
-      taxes: taxes,
-      total_tax: totalTax,
-      total: totoal,
-      footer_data: footerData,
-      currency: currency,
-    };
-    localStorage.setItem("InvoiceData", JSON.stringify(finalData));
+    if (errorNum < 1 ) {
+      localStorage.removeItem("InvoiceData");
+      const finalData = {
+        logo: logo,
+        invoice_no: invoice,
+        from: billFrom,
+        to: billTo,
+        voucher_no: voucherNumber,
+        transaction_date: moment(transactionDate).format("MMMM DD, YYYY"),
+        due_date: moment(dueDate).format("MMMM DD, YYYY"),
+        createdAt: moment(createdAt).format("MMMM DD, YYYY"),
+        items: items,
+        sub_totoal: subTotal,
+        sub_totoal_after_discount: subTotalAfterDiscount,
+        discount: discount,
+        taxes: taxes,
+        total_tax: totalTax,
+        total: totoal,
+        footer_data: footerData,
+        currency: currency,
+      };
+      localStorage.setItem("InvoiceData", JSON.stringify(finalData));
+    }
+    
   };
 
   //Uploading Logo Handle
@@ -197,8 +208,6 @@ const CreateInvoice = () => {
       setHasLogo(file ? true : false);
     };
   };
-
-  console.log("Errors", errors);
 
   //Add Item on Items list
   const handleAddItem = (e) => {
@@ -413,7 +422,7 @@ const CreateInvoice = () => {
                     imgExtension={[".jpg", ".gif", ".png", ".gif"]}
                     maxFileSize={5242880}
                   />
-                  { !logo && errors.logo.length > 0 && (
+                  {!logo && errors.logo.length > 0 && (
                     <ShowError className="error">
                       <ul>
                         {errors.logo.map((error) => (
@@ -432,7 +441,7 @@ const CreateInvoice = () => {
                     value={invoice}
                     onChange={(e) => setinvoice(e.target.value)}
                   />
-                  { !invoice && errors.invoiceNo.length > 0 && (
+                  {!invoice && errors.invoiceNo.length > 0 && (
                     <ShowError className="error">
                       <ul>
                         {errors.invoiceNo.map((error) => (
@@ -472,15 +481,15 @@ const CreateInvoice = () => {
                       placeholder="Name: X Company"
                       value={billFrom}
                     ></TextareaField>
-                    { !billFrom && errors.billFrom.length > 0 && (
-                    <ShowError className="error">
-                      <ul>
-                        {errors.billFrom.map((error) => (
-                          <li>{error}</li>
-                        ))}
-                      </ul>
-                    </ShowError>
-                  )}
+                    {!billFrom && errors.billFrom.length > 0 && (
+                      <ShowError className="error">
+                        <ul>
+                          {errors.billFrom.map((error) => (
+                            <li>{error}</li>
+                          ))}
+                        </ul>
+                      </ShowError>
+                    )}
                   </InputWrapper>
                 </FormLeft>
 
@@ -493,15 +502,15 @@ const CreateInvoice = () => {
                       placeholder="Name: Y Company"
                       value={billTo}
                     ></TextareaField>
-                    { !billTo && errors.billTo.length > 0 && (
-                    <ShowError className="error">
-                      <ul>
-                        {errors.billTo.map((error) => (
-                          <li>{error}</li>
-                        ))}
-                      </ul>
-                    </ShowError>
-                  )}
+                    {!billTo && errors.billTo.length > 0 && (
+                      <ShowError className="error">
+                        <ul>
+                          {errors.billTo.map((error) => (
+                            <li>{error}</li>
+                          ))}
+                        </ul>
+                      </ShowError>
+                    )}
                   </InputWrapper>
                 </FormRight>
               </InnerRow>
@@ -604,6 +613,20 @@ const CreateInvoice = () => {
                         </tr>
                       );
                     })}
+                    
+                    { errors.items && errors.items.length > 0 && (
+                      <tr>
+                        <td className="add_items" colSpan="5">
+                          <ShowError className="error">
+                            <ul>
+                              {errors.items.map((error) => (
+                                <li>{error}</li>
+                              ))}
+                            </ul>
+                          </ShowError>
+                        </td>
+                      </tr>
+                    )}
 
                     <tr>
                       <td className={"add_items"} colSpan="2">
