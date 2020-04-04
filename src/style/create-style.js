@@ -76,9 +76,12 @@ export const MainHeader = styled.div`
     }
   }
 
+  .invoice_logo {
+    margin-bottom: 0;
+  }
   .invoice {
     margin: 0 0 0 auto;
-    width: 250px;
+    width: 300px;
 
     input {
       width: 100%;
@@ -198,7 +201,7 @@ export const ActionButtons = styled.div`
   justify-content: space-between;
 
   > button {
-    width: auto;
+    width: 47%;
     margin-right: 2%;
     border: 1px solid #9da5ea;
     background-color: transparent;
@@ -753,4 +756,20 @@ export const FooterRow = styled.div`
   width: 110%;
   background-color: #485195;
   margin: 5em -16px -16px;
+`;
+
+export const ShowError = styled.div`
+  margin: 0;
+  padding: 0;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0;
+
+    li {
+      color: #ff4141;
+      font-size: .8em;
+    }
+  }
 `;

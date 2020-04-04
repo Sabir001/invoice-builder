@@ -6,9 +6,9 @@ import moment from "moment";
 import CurrencyData from "../currency/currency";
 import Select from "react-select";
 import DateLogo from "../../assets/image/datepicker-icon.png";
-import ReactPDF from "@react-pdf/renderer";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import PDFDisplay from "./pdf-design";
+// import ReactPDF from "@react-pdf/renderer";
+// import { PDFDownloadLink } from "@react-pdf/renderer";
+// import PDFDisplay from "./pdf-design";
 
 import {
   Wrapper,
@@ -32,11 +32,12 @@ import {
   ActionButtons,
   TaxRow,
   FinalTotal,
-  FooterRow
+  FooterRow,
+  ShowError,
 } from "../../style/create-style";
 
 const CreateInvoice = () => {
-  const [logo, setLogo] = useState();
+  const [logo, setLogo] = useState("");
   const [hasLogo, setHasLogo] = useState(false);
   const [invoice, setinvoice] = useState("");
   const [billFrom, setBillFrom] = useState("");
@@ -47,7 +48,7 @@ const CreateInvoice = () => {
   const [createdAt, setCreatedAt] = useState(new Date());
 
   const [items, setItems] = useState([
-    { serial_number: 1, name: "", quantity: 1, rate: 0, amount: 0 }
+    { serial_number: 1, name: "", quantity: 1, rate: 0, amount: 0 },
   ]);
 
   const [currency, setCurrency] = useState("USD"); //Currency
@@ -57,12 +58,12 @@ const CreateInvoice = () => {
   const [discount, updateDiscount] = useState({
     type: "fixed",
     discountAmount: 0,
-    discountTotal: 0
+    discountTotal: 0,
   });
   const [subTotalAfterDiscount, updateSubTotalAfterDiscount] = useState(0); //Sub Total After Discount
 
   const [taxes, updateTax] = useState([
-    { type: undefined, tax_percentage: 0, total: 0 }
+    { type: undefined, tax_percentage: 0, total: 0 },
   ]);
   const [totalTax, updateTotalTax] = useState(0); //Total Tax
 
@@ -70,33 +71,49 @@ const CreateInvoice = () => {
 
   const [footerData, updateFooterData] = useState({
     title: undefined,
-    content: undefined
+    content: undefined,
   });
 
-  const [roundNumber, setRoundNumber] = useState(true); //Number Type: Decimal or Round
+  const [roundNumber, setRoundNumber] = useState("netRound"); //Number Type: Decimal or Round
+
+  const [errors, setError] = useState({
+    logo: "",
+    invoiceNo: "",
+    billFrom: "",
+    billTo: "",
+    createdDate: "",
+    transactionDate: "",
+    dueDate: "",
+  });
 
   // Handle Currency
-  const handleCurrency = selectedOption => {
+  const handleCurrency = (selectedOption) => {
     setCurrency(selectedOption.value);
   };
 
   // Handle Number Type
-  const handleroundNumber = selectedOption => {
-    if (selectedOption.value === "round") {
-      setRoundNumber(true);
+  const handleroundNumber = (selectedOption) => {
+    setRoundNumber(selectedOption.value);
+  };
+
+  //Empty Validation Function
+  const isEmpty = (value) => {
+    if (!value) {
+      value = 0;
     }
-    else {
-      setRoundNumber(false);
-    }    
+    if (value.length > 0) {
+      return false;
+    }
+    return true;
   };
 
   //Function to Convert Number into Appropiate Number Type
-  const handleNumber = number => {
+  const handleNumber = (number) => {
     if (!number) {
       number = 0;
     }
-    
-    if (roundNumber) {
+
+    if (roundNumber === "round") {
       number = Math.floor(number);
     } else {
       number = parseFloat(number).toFixed(2);
@@ -105,19 +122,43 @@ const CreateInvoice = () => {
   };
 
   //Preview Button Handle
-  const handlePreview = e => {
+  const handlePreview = (e) => {
     handleSave();
     window.open("/pdf");
   };
 
-  //Preview Button Handle
-  const handlePdfDownload = e => {
-    handleSave();
-    ReactPDF.render(<PDFDisplay />, `${__dirname}/example.pdf`);
-  };
-
   //Save All Data
-  const handleSave = e => {
+  const handleSave = (e) => {
+    let errorNum = 0;
+    if (isEmpty(logo)) {
+      errorNum++;
+      var logoError = ["Please Upload a Logo/ Brand Image"];
+    }
+    if (isEmpty(invoice)) {
+      errorNum++;
+      var InvoiceError = ["Please Write Invoice Number"];
+    }
+    if (isEmpty(billFrom)) {
+      errorNum++;
+      var billFromError = ["Please provide Billing Information"];
+    }
+    if (isEmpty(billTo)) {
+      errorNum++;
+      var billToError = ["Please provide Billing Information"];
+    }
+
+    setError({
+      logo: logoError,
+      invoiceNo: InvoiceError,
+      billFrom: billFromError,
+      billTo: billToError,
+    });
+
+    if (isEmpty(voucherNumber)) {
+      setVoucherNumber("N/A");
+    }
+
+    console.log("Error Number", errorNum);
     localStorage.removeItem("InvoiceData");
     const finalData = {
       logo: logo,
@@ -136,16 +177,13 @@ const CreateInvoice = () => {
       total_tax: totalTax,
       total: totoal,
       footer_data: footerData,
-      currency: currency
+      currency: currency,
     };
     localStorage.setItem("InvoiceData", JSON.stringify(finalData));
-
-    const data = localStorage.getItem("InvoiceData");
-    const invoiceData = JSON.parse(data);
   };
 
   //Uploading Logo Handle
-  const onDrop = logo => {
+  const onDrop = (logo) => {
     let file = logo[0];
 
     let reader = new FileReader();
@@ -160,15 +198,17 @@ const CreateInvoice = () => {
     };
   };
 
+  console.log("Errors", errors);
+
   //Add Item on Items list
-  const handleAddItem = e => {
+  const handleAddItem = (e) => {
     e.preventDefault();
 
     const newItem = {
       name: "",
       quantity: 1,
       rate: 0,
-      amount: 0
+      amount: 0,
     };
 
     setItems([...items, newItem]);
@@ -199,9 +239,12 @@ const CreateInvoice = () => {
       case "name":
         newItems[index].name = e.target.value;
         break;
+
+      default:
+        return false;
     }
 
-    if (e.target.name === "rate" || e.target.name === "quantity") {      
+    if (e.target.name === "rate" || e.target.name === "quantity") {
       let amount = newItems[index].rate * newItems[index].quantity;
       newItems[index].amount = handleNumber(amount);
     }
@@ -212,10 +255,10 @@ const CreateInvoice = () => {
   //Calculate Subtotal
   useEffect(() => {
     let subTotalState = items.reduce((prev, next) => {
-      return (parseFloat(prev) + parseFloat(next.amount));
+      return parseFloat(prev) + parseFloat(next.amount);
     }, 0);
     updateSubTotal(handleNumber(subTotalState));
-  }, [items]);
+  }, [items, roundNumber]);
 
   //Function to Calculate Discount
   const calculateDiscount = (type, amount) => {
@@ -230,21 +273,21 @@ const CreateInvoice = () => {
   };
 
   //Handle Discount Type
-  const handleDiscountType = e => {
+  const handleDiscountType = (e) => {
     let total = calculateDiscount(e.target.value, discount.discountAmount);
     updateDiscount({
       ...discount,
-      ...{ type: e.target.value, discountTotal: total }
+      ...{ type: e.target.value, discountTotal: total },
     });
   };
 
   //Handle Discount Amount
-  const handleDiscount = e => {
+  const handleDiscount = (e) => {
     let value = e.target.value;
     let total = calculateDiscount(discount.type, value);
     updateDiscount({
       ...discount,
-      ...{ discountAmount: value, discountTotal: total }
+      ...{ discountAmount: value, discountTotal: total },
     });
   };
 
@@ -254,9 +297,9 @@ const CreateInvoice = () => {
     total = calculateDiscount(discount.type, discount.discountAmount);
     updateDiscount({
       ...discount,
-      ...{ discountTotal: total }
+      ...{ discountTotal: total },
     });
-  }, [subTotal]);
+  }, [subTotal, roundNumber]);
 
   //
   useEffect(() => {
@@ -264,10 +307,10 @@ const CreateInvoice = () => {
 
     total = subTotal - discount.discountTotal;
     updateSubTotalAfterDiscount(handleNumber(total));
-  }, [discount, subTotal]);
+  }, [discount, subTotal, roundNumber]);
 
   // Handle Tax Fields
-  const handleMultipleTaxField = e => {
+  const handleMultipleTaxField = (e) => {
     e.preventDefault();
     let newTaxField = { type: undefined, tax_percentage: 0 };
     const taxFields = [...taxes, newTaxField];
@@ -285,7 +328,7 @@ const CreateInvoice = () => {
   };
 
   //Function to Calculate Tax Amount
-  const calculateTax = amount => {
+  const calculateTax = (amount) => {
     let totalTax = subTotalAfterDiscount * (amount / 100);
     return handleNumber(totalTax);
   };
@@ -295,7 +338,7 @@ const CreateInvoice = () => {
     const taxData = [...taxes];
     taxData[index] = {
       ...taxes[index],
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     };
 
     if (e.target.name === "tax_percentage") {
@@ -313,32 +356,39 @@ const CreateInvoice = () => {
       taxArray[i] = {
         type: item.type,
         tax_percentage: item.tax_percentage,
-        total: itemTax
+        total: itemTax,
       };
     });
     updateTax(taxArray);
-  }, [subTotalAfterDiscount, items]);
+  }, [subTotalAfterDiscount, items, roundNumber]);
 
   //Calculate Total Tax
   useEffect(() => {
     let totalTax = taxes.reduce((prev, next) => {
-      return (parseFloat(prev) + parseFloat(next.total));
+      return parseFloat(prev) + parseFloat(next.total);
     }, 0);
 
     updateTotalTax(handleNumber(totalTax));
-  }, [taxes]);
+  }, [taxes, roundNumber]);
 
   // calculating Net total
   useEffect(() => {
-    let updatedTotalWithTax = parseFloat(subTotalAfterDiscount) + parseFloat(totalTax);
-    updateTotal(handleNumber(updatedTotalWithTax));
-  }, [subTotalAfterDiscount, totalTax]);
+    let updatedTotalWithTax =
+      parseFloat(subTotalAfterDiscount) + parseFloat(totalTax);
+    if (roundNumber === "round" || roundNumber === "netRound") {
+      updatedTotalWithTax = Math.floor(updatedTotalWithTax);
+    } else {
+      updatedTotalWithTax = parseFloat(updatedTotalWithTax).toFixed(2);
+    }
+
+    updateTotal(updatedTotalWithTax);
+  }, [subTotalAfterDiscount, totalTax, roundNumber]);
 
   //Handle Footer
-  const handleFooter = e => {
+  const handleFooter = (e) => {
     updateFooterData({
       ...footerData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -350,18 +400,29 @@ const CreateInvoice = () => {
           <Row className={"row"}>
             <ContentLeft>
               <InnerRow>
-                <ImageUploader
-                  className={hasLogo ? "uploaded" : ""}
-                  withIcon={false}
-                  withPreview={true}
-                  singleImage={true}
-                  buttonText={""}
-                  withLabel={true}
-                  label={"Drop Your Logo"}
-                  onChange={onDrop}
-                  imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-                  maxFileSize={5242880}
-                />
+                <InputWrapper className="invoice_logo">
+                  <ImageUploader
+                    className={hasLogo ? "uploaded" : ""}
+                    withIcon={false}
+                    withPreview={true}
+                    singleImage={true}
+                    buttonText={""}
+                    withLabel={true}
+                    label={"Drop Your Logo"}
+                    onChange={onDrop}
+                    imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                    maxFileSize={5242880}
+                  />
+                  { !logo && errors.logo.length > 0 && (
+                    <ShowError className="error">
+                      <ul>
+                        {errors.logo.map((error) => (
+                          <li>{error}</li>
+                        ))}
+                      </ul>
+                    </ShowError>
+                  )}
+                </InputWrapper>
                 <InputWrapper className={"invoice"}>
                   <InputLabel>Invoice No</InputLabel>
                   <InputField
@@ -369,8 +430,17 @@ const CreateInvoice = () => {
                     name="invoice-id"
                     placeholder="Add Invoice No"
                     value={invoice}
-                    onChange={e => setinvoice(e.target.value)}
+                    onChange={(e) => setinvoice(e.target.value)}
                   />
+                  { !invoice && errors.invoiceNo.length > 0 && (
+                    <ShowError className="error">
+                      <ul>
+                        {errors.invoiceNo.map((error) => (
+                          <li>{error}</li>
+                        ))}
+                      </ul>
+                    </ShowError>
+                  )}
                 </InputWrapper>
               </InnerRow>
             </ContentLeft>
@@ -378,9 +448,9 @@ const CreateInvoice = () => {
             <ContentRight className={"header_buttons"}>
               <SendButton>Send Invoice</SendButton>
               <ActionButtons>
-                <button onClick={e => handlePreview(e)}>Preview</button>
-                <button onClick={e => handleSave(e)}>Save</button>
-                <button onClick={e => handlePreview(e)}>Download</button>
+                {/* <button onClick={e => handlePreview(e)}>Preview</button> */}
+                <button onClick={(e) => handleSave(e)}>Save</button>
+                <button onClick={(e) => handlePreview(e)}>Download</button>
               </ActionButtons>
             </ContentRight>
           </Row>
@@ -397,11 +467,20 @@ const CreateInvoice = () => {
                   <InputWrapper>
                     <InputLabel>From</InputLabel>
                     <TextareaField
-                      name="bill_to"
-                      onChange={e => setBillFrom(e.target.value)}
+                      name="bill_from"
+                      onChange={(e) => setBillFrom(e.target.value)}
                       placeholder="Name: X Company"
                       value={billFrom}
                     ></TextareaField>
+                    { !billFrom && errors.billFrom.length > 0 && (
+                    <ShowError className="error">
+                      <ul>
+                        {errors.billFrom.map((error) => (
+                          <li>{error}</li>
+                        ))}
+                      </ul>
+                    </ShowError>
+                  )}
                   </InputWrapper>
                 </FormLeft>
 
@@ -409,11 +488,20 @@ const CreateInvoice = () => {
                   <InputWrapper>
                     <InputLabel>To</InputLabel>
                     <TextareaField
-                      name="bill_from"
-                      onChange={e => setBillTo(e.target.value)}
+                      name="bill_to"
+                      onChange={(e) => setBillTo(e.target.value)}
                       placeholder="Name: Y Company"
                       value={billTo}
                     ></TextareaField>
+                    { !billTo && errors.billTo.length > 0 && (
+                    <ShowError className="error">
+                      <ul>
+                        {errors.billTo.map((error) => (
+                          <li>{error}</li>
+                        ))}
+                      </ul>
+                    </ShowError>
+                  )}
                   </InputWrapper>
                 </FormRight>
               </InnerRow>
@@ -425,7 +513,7 @@ const CreateInvoice = () => {
                     type="text"
                     placeholder="Voucher No"
                     value={voucherNumber}
-                    onChange={e => setVoucherNumber(e.target.value)}
+                    onChange={(e) => setVoucherNumber(e.target.value)}
                   />
                 </InputWrapper>
 
@@ -434,7 +522,7 @@ const CreateInvoice = () => {
                   <DatePicker
                     showPopperArrow={true}
                     selected={createdAt}
-                    onChange={date => setCreatedAt(date)}
+                    onChange={(date) => setCreatedAt(date)}
                   />
                   <img className={"dateicon"} src={DateLogo} />
                 </InputWrapper>
@@ -444,7 +532,7 @@ const CreateInvoice = () => {
                   <DatePicker
                     showPopperArrow={false}
                     selected={transactionDate}
-                    onChange={date => setTransactionDate(date)}
+                    onChange={(date) => setTransactionDate(date)}
                   />
                   <img className={"dateicon"} src={DateLogo} />
                 </InputWrapper>
@@ -454,7 +542,7 @@ const CreateInvoice = () => {
                   <DatePicker
                     showPopperArrow={false}
                     selected={dueDate}
-                    onChange={date => setDueDate(date)}
+                    onChange={(date) => setDueDate(date)}
                   />
                   <img className={"dateicon"} src={DateLogo} />
                 </InputWrapper>
@@ -483,7 +571,7 @@ const CreateInvoice = () => {
                               name="name"
                               type="text"
                               placeholder="Write Item Name"
-                              onChange={e => handleItemChange(e, i)}
+                              onChange={(e) => handleItemChange(e, i)}
                             />
                           </td>
 
@@ -492,7 +580,7 @@ const CreateInvoice = () => {
                               name="rate"
                               type="text"
                               placeholder="0"
-                              onChange={e => handleItemChange(e, i)}
+                              onChange={(e) => handleItemChange(e, i)}
                             />
                           </td>
 
@@ -501,7 +589,7 @@ const CreateInvoice = () => {
                               name="quantity"
                               type="text"
                               placeholder="1"
-                              onChange={e => handleItemChange(e, i)}
+                              onChange={(e) => handleItemChange(e, i)}
                             />
                           </td>
 
@@ -509,7 +597,7 @@ const CreateInvoice = () => {
                             <span>
                               {currency} {item.amount}
                             </span>
-                            <button onClick={e => handleRemoveItem(e, i)}>
+                            <button onClick={(e) => handleRemoveItem(e, i)}>
                               X
                             </button>
                           </td>
@@ -519,7 +607,7 @@ const CreateInvoice = () => {
 
                     <tr>
                       <td className={"add_items"} colSpan="2">
-                        <button onClick={e => handleAddItem(e)}>
+                        <button onClick={(e) => handleAddItem(e)}>
                           + Line Item
                         </button>
                       </td>
@@ -538,14 +626,14 @@ const CreateInvoice = () => {
                       <td className={"discount"} colSpan="2">
                         <Discounts>
                           <InputLabel>Discount</InputLabel>
-                          <select onChange={e => handleDiscountType(e)}>
+                          <select onChange={(e) => handleDiscountType(e)}>
                             <option value="fixed">Fixed</option>
                             <option value="percentage">Percentage</option>
                           </select>
                           <InputField
                             type="text"
                             placeholder={discount.discountAmount}
-                            onChange={e => handleDiscount(e)}
+                            onChange={(e) => handleDiscount(e)}
                           />
                         </Discounts>
                       </td>
@@ -585,7 +673,7 @@ const CreateInvoice = () => {
                                   placeholder="Name of The Tax"
                                   type="text"
                                   name="type"
-                                  onChange={e => handleTaxChange(e, index)}
+                                  onChange={(e) => handleTaxChange(e, index)}
                                   value={tax.type}
                                 />
 
@@ -593,7 +681,7 @@ const CreateInvoice = () => {
                                   type="number"
                                   name="tax_percentage"
                                   placeholder="Amount (%)"
-                                  onChange={e => handleTaxChange(e, index)}
+                                  onChange={(e) => handleTaxChange(e, index)}
                                   value={
                                     tax.tax_percentage > 0
                                       ? tax.tax_percentage
@@ -607,7 +695,7 @@ const CreateInvoice = () => {
                               <InputLabel className="tax_amount">
                                 {currency} {tax.total}
                                 <button
-                                  onClick={e => handleRemoveTax(e, index)}
+                                  onClick={(e) => handleRemoveTax(e, index)}
                                 >
                                   X
                                 </button>
@@ -621,7 +709,7 @@ const CreateInvoice = () => {
                     <tr className="add_tax_calc calculation">
                       <td className={"blank"} colSpan="2"></td>
                       <td className={"add_tax"} colSpan="3">
-                        <button onClick={e => handleMultipleTaxField(e)}>
+                        <button onClick={(e) => handleMultipleTaxField(e)}>
                           <span>+</span> Add Tax
                         </button>
                       </td>
@@ -658,18 +746,18 @@ const CreateInvoice = () => {
 
               <AdditionalRow>
                 <InputWrapper>
-                  <InputLabel>Additional Info</InputLabel>
+                  <InputLabel>Additional Info (Optional)</InputLabel>
                   <InputField
                     name="title"
-                    onChange={e => handleFooter(e)}
+                    onChange={(e) => handleFooter(e)}
                     placeholder="Title"
                   />
 
                   <TextareaField
                     name="content"
-                    onChange={e => setBillFrom(e.target.value)}
+                    onChange={(e) => setBillFrom(e.target.value)}
                     placeholder="Additional Info"
-                    onChange={e => handleFooter(e)}
+                    onChange={(e) => handleFooter(e)}
                   ></TextareaField>
                 </InputWrapper>
               </AdditionalRow>
@@ -683,11 +771,11 @@ const CreateInvoice = () => {
                 <Select
                   value={currency}
                   placeholder={currency}
-                  onChange={e => handleCurrency(e)}
-                  options={CurrencyData.map(item => {
+                  onChange={(e) => handleCurrency(e)}
+                  options={CurrencyData.map((item) => {
                     return {
                       value: item.cc,
-                      label: item.name
+                      label: item.name,
                     };
                   })}
                 />
@@ -696,11 +784,12 @@ const CreateInvoice = () => {
               <InputWrapper>
                 <InputLabel>Number Type</InputLabel>
                 <Select
-                  placeholder={"Round"}
-                  onChange={e => handleroundNumber(e)}
+                  placeholder={"Round Net Total"}
+                  onChange={(e) => handleroundNumber(e)}
                   options={[
-                    { value: "round", label: "Round (00)" },
-                    { value: "decimal", label: "Decimal (00.00)" }
+                    { value: "netRound", label: "Round Net Total" },
+                    { value: "round", label: "Round Each Amount" },
+                    { value: "decimal", label: "Decimal (00.00)" },
                   ]}
                 />
               </InputWrapper>
